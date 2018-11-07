@@ -1,34 +1,44 @@
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
+import Auto.*;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        NFA m = new NFA();
-        m.addState("a")
-                .addState("b")
-                .addState("c")
-                .addState("d")
-                .addState("e");
-        m.addInputAlphaRange('a','c');
-        m.addTransition("a",'a',"b")
-                .addTransition("b",'b',"c")
-                .addTransition("c",'a',"c")
-                .addTransition("c",'b',"c")
-                .addTransition("c",'c',"c")
-                .addTransition("c",'c',"d")
-                .addTransition("d",'c',"e");
-        m.setInitialState("a");
-        m.setFinalState("e");
-        System.out.println(m.isAccepted("abababaaacccccc"));
-    }
-    static void read(FiniteStateTransducer f){
-        Scanner s = new Scanner(System.in);
-        String b;
-        while (true){
-            b = s.nextLine();
-            System.out.println(f.run(b));
-        }
+import java.io.File;
+import java.net.URL;
+
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        FXMLLoader loader = new FXMLLoader(new File("C:\\Users\\jit\\IdeaProjects\\Automata\\Resources" +
+                "\\view\\start_pane.fxml").toURL());
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 600, 450);
+        primaryStage.setTitle("Theory of Automata");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
     }
 }
-
+/*
+NFA d = new NFA();
+        d.addState("0").addState("1").addState("2");
+        d.addInputAlpha('0')
+                .addInputAlpha('1');
+        d.addTransition("0",'0',"0")
+                .addTransition("0",'1',"0")
+                .addTransition("0",'1',"1")
+                .addTransition("1",'1',"2")
+                .addTransition("2",'1',"2")
+                .addTransition("2",'0',"2");
+        d.setFinalState("2");
+        d.setInitialState("0");
+        d.addDescription("accepts string with two consecutive ones");
+        d.setName("21");
+        d.save();
+ */

@@ -1,7 +1,9 @@
+package Auto;
+
 import java.util.HashMap;
 
 public class MooreMachine extends FiniteStateTransducer{
-    MooreMachine(){
+    public MooreMachine(){
         super();
         outputMap = new HashMap<>();
     }

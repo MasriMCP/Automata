@@ -1,7 +1,8 @@
-import java.io.*;
+package Auto;
+
 import java.util.HashMap;
 public class MealyMachine extends FiniteStateTransducer{
-    MealyMachine(){
+    public MealyMachine(){
         super();
         outputMap = new HashMap<>();
     }

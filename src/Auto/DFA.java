@@ -1,5 +1,7 @@
+package Auto;
+
 public class DFA extends MooreMachine{
-    DFA(){
+    public DFA(){
         super();
         outputAlpha.add('0');
         outputAlpha.add('1');
@@ -8,9 +10,11 @@ public class DFA extends MooreMachine{
         super.addStateOutput(state,'0');
         return this;
     }
-    public DFA setFinalState(String state){
-        if(!states.contains(state)) throw new IllegalArgumentException("no such state: "+state);
-        outputMap.put(state,'1');
+    public DFA setFinalState(String... fStates){
+        for(String state:fStates){
+            if(!states.contains(state)) throw new IllegalArgumentException("no such state: "+state);
+            outputMap.put(state,'1');
+        }
         return this;
     }
     public boolean isAccepted(String input){

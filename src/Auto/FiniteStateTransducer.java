@@ -1,20 +1,54 @@
+package Auto;
+
+import netscape.javascript.JSObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 
-abstract class FiniteStateTransducer implements Serializable {
+public abstract class FiniteStateTransducer implements Serializable {
     protected HashSet<String> states;//Q
     protected HashSet<Character> inputAlpha;//sigma
     protected HashSet<Character> outputAlpha;//gamma
     protected HashMap<String,String> transitionMap;//delta
     protected String initialState;//q0
     protected HashMap<String,Character> outputMap;//theta
+    private String desc;
+    private String name;
+    private String type;
+
     FiniteStateTransducer(){
         states = new HashSet<>();
         transitionMap = new HashMap<>();
         inputAlpha = new HashSet<>();
         outputAlpha = new HashSet<>();
+        if(this instanceof MealyMachine){
+            type = "mea";
+        }
+        else if(this instanceof DFA){
+            type = "dfa";
+        }
+        else if(this instanceof NFA){
+            type = "nfa";
+        }
+        else if(this instanceof MooreMachine){
+            type = "mor";
+        }
+
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+
+    }
+
     public FiniteStateTransducer setInitialState(String state){
         if(!states.contains(state)) throw new IllegalArgumentException("no such state: "+state);
         initialState = state;
@@ -53,26 +87,46 @@ abstract class FiniteStateTransducer implements Serializable {
         return this;
     }
     public static FiniteStateTransducer load(String path) throws IOException {
-        ObjectInputStream obj = new ObjectInputStream(new FileInputStream(path));
-        try{
-            return (FiniteStateTransducer) obj.readObject();
+        FiniteStateTransducer ret=null;
+        JSONParser parser = new JSONParser();
+        try {
+
+            parser.parse(path);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        catch (ClassNotFoundException ex){
-            return null;
-        }
-        finally {
-            obj.close();
-        }
+        return ret;//TODO this
     }
-    public void save(String path)throws IOException {
-        ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(path));
-        obj.writeObject(this);
-        obj.close();
+    public void save(){
+        String path = name+"."+type;
+        try( BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path)))){
+            writer.write(this.toString());
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
+        }
     }
     public abstract String run(String input);
     @Override
     public String toString() {
-        return transitionMap.toString();
+        JSONObject obj = new JSONObject();
+        obj.put("states",states);
+        obj.put("input alpha",inputAlpha);
+        obj.put("output alpha",outputAlpha);
+        obj.put("transition map",transitionMap);
+        obj.put("initial state",initialState);
+        obj.put("output map",outputMap);
+        obj.put("description",desc);
+        obj.put("name",name);
+        obj.put("type",type);
+        return obj.toString();
+    }
+    public void addDescription(String desc)
+    {
+        this.desc = desc;
+    }
+    public String describe(){
+        return desc;
     }
     protected boolean isTotal(){
         if(transitionMap.size()!=inputAlpha.size()*states.size()) return false;

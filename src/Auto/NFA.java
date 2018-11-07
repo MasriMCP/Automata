@@ -1,5 +1,10 @@
+package Auto;
+
+import java.util.HashSet;
+
 public class NFA extends MooreMachine{
-    NFA(){
+    public static final char LAMBDA =0;
+    public NFA(){
         super();
         outputAlpha.add('0');
         outputAlpha.add('1');
@@ -8,9 +13,11 @@ public class NFA extends MooreMachine{
         super.addStateOutput(state,'0');
         return this;
     }
-    public NFA setFinalState(String state){
-        if(!states.contains(state)) throw new IllegalArgumentException("no such state: "+state);
-        outputMap.put(state,'1');
+    public NFA setFinalState(String... fStates){
+        for(String state:fStates){
+            if(!states.contains(state)) throw new IllegalArgumentException("no such state: "+state);
+            outputMap.put(state,'1');
+        }
         return this;
     }
     public NFA addTransition(String state0,char symbol,String state1){
@@ -36,21 +43,33 @@ public class NFA extends MooreMachine{
             return outputMap.get(state)=='1';
         }
         boolean ret = false;//the return value
-        try{
-            //states is an array of the possible states we can transition to
+       if(transitionMap.get(state+input.charAt(0))==null) return false;
             String[] states  = transitionMap.get(state+input.charAt(0)).split(",");
-        }
-        catch (NullPointerException ex){
-            //if the transition is null that means there are no more possible transitions for this branch
-            //and the result is false
-            return false;
-        }
         for(String s:states){
             //for each state
             //if any of the branches can reach a final state ret will be true;
             ret = ret || run(input.substring(1,input.length()),s);
         }
+        /*for(String s:getLambdaClosure(state)){
+            ret = ret || run(input,s);
+
+        }*/
         return ret;
     }
-
+    private HashSet<String> getLambdaClosure(String state){
+        HashSet<String> ret = getLambdaClosure(state,new HashSet<>());
+        return ret;
+    }
+    private HashSet<String> getLambdaClosure(String state,HashSet<String> set){
+        if(set.contains(state)) return set;
+        set.add(state);
+        if(transitionMap.get(state+LAMBDA)==null) return set;
+           String[] states  = transitionMap.get(state+LAMBDA).split(",");
+        for(String s:states){
+            if(!set.contains(s)){
+                set.addAll(getLambdaClosure(s,set));
+            }
+        }
+        return set;
+    }
 }
