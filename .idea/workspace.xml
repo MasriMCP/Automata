@@ -2,27 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="212937fb-90e5-4b8d-8d27-2b7247f13c8e" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Resources/View/draw_pane.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Resources/View/start_pane.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Controllers/DrawPaneController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Controllers/StartPaneController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/json-simple-1.1.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Visual/State.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AutomataProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/AutomataProject.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/DFA.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/FiniteStateTransducer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/AutomataProject/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/MealyMachine.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/MooreMachine.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/NFA.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/AutomataProject/State.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DFA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auto/DFA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FiniteStateTransducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MealyMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auto/MealyMachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MooreMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auto/MooreMachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/NFA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auto/NFA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/State.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controllers/DrawPaneController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controllers/DrawPaneController.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -37,7 +19,7 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
+            <state relative-caret-position="153">
               <caret line="19" selection-start-line="19" selection-end-line="19" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -46,11 +28,34 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DrawPaneController.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DrawPaneController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Controllers/DrawPaneController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="15" column="33" lean-forward="true" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="33" />
+            <state relative-caret-position="136">
+              <caret line="48" column="28" lean-forward="true" selection-start-line="48" selection-start-column="28" selection-end-line="48" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FiniteStateTransducer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1496">
+              <caret line="97" column="25" selection-start-line="97" selection-start-column="25" selection-end-line="97" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="State.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Visual/State.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#479#480#0" expanded="true" />
+                <element signature="e#517#518#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -115,6 +120,8 @@
         <option value="$PROJECT_DIR$/src/Controllers/DrawPane.java" />
         <option value="$PROJECT_DIR$/src/Controllers/StartPane.java" />
         <option value="$PROJECT_DIR$/src/Controllers/StartPaneController.java" />
+        <option value="$PROJECT_DIR$/src/Controllers/DrawPaneController.java" />
+        <option value="$PROJECT_DIR$/src/Visual/State.java" />
       </list>
     </option>
   </component>
@@ -132,8 +139,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -171,12 +176,20 @@
             </path>
             <path>
               <item name="automata" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Automata" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Visual" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="automata" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -267,6 +280,14 @@
       <option name="presentableId" value="Default" />
       <updated>1541419081963</updated>
     </task>
+    <task id="LOCAL-00001" summary="added some UI">
+      <created>1541631923858</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1541631923858</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -304,6 +325,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="added some UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="added some UI" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <option name="time" value="7" />
@@ -320,13 +345,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Controllers/DrawPaneController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="15" column="33" lean-forward="true" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/start_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1003">
           <caret line="59" column="14" lean-forward="true" selection-start-line="59" selection-start-column="14" selection-end-line="59" selection-end-column="14" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Controllers/StartPaneController.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -349,12 +391,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/start_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="850">
           <caret line="50" column="34" lean-forward="true" selection-start-line="50" selection-start-column="34" selection-end-line="50" selection-end-column="34" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Auto/DFA.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -398,12 +440,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/start_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1207">
           <caret line="71" column="113" selection-start-line="71" selection-start-column="113" selection-end-line="71" selection-end-column="113" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Auto/DFA.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -454,12 +496,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/draw_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="13" column="39" selection-start-line="13" selection-start-column="39" selection-end-line="13" selection-end-column="39" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Controllers/DrawPaneController.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -479,12 +521,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/draw_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="10" column="35" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="35" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Controllers/DrawPaneController.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -575,25 +617,18 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/draw_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="13" column="39" selection-start-line="13" selection-start-column="39" selection-end-line="13" selection-end-column="39" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/21.nfa.mor" />
     <entry file="file://$PROJECT_DIR$/21.nfa">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="19" lean-forward="true" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1496">
-          <caret line="97" column="25" selection-start-line="97" selection-start-column="25" selection-end-line="97" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -632,16 +667,16 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/start_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="59" column="14" selection-start-line="59" selection-start-column="14" selection-end-line="59" selection-end-column="14" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
+        <state relative-caret-position="153">
           <caret line="19" selection-start-line="19" selection-end-line="19" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -651,8 +686,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Controllers/DrawPaneController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="15" column="33" lean-forward="true" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="33" />
+        <state relative-caret-position="136">
+          <caret line="48" column="28" lean-forward="true" selection-start-line="48" selection-start-column="28" selection-end-line="48" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1496">
+          <caret line="97" column="25" selection-start-line="97" selection-start-column="25" selection-end-line="97" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Visual/State.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#479#480#0" expanded="true" />
+            <element signature="e#517#518#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
