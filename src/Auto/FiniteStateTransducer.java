@@ -23,7 +23,7 @@ public abstract class FiniteStateTransducer implements Serializable {
     FiniteStateTransducer(){
         states = new HashSet<>();
         transitionMap = new HashMap<>();
-        inputAlpha = new HashSet<>();
+        inputAlpha = new HashSet<Character>();
         outputAlpha = new HashSet<>();
         if(this instanceof MealyMachine){
             type = "mea";
@@ -86,6 +86,12 @@ public abstract class FiniteStateTransducer implements Serializable {
         transitionMap.put(state0+String.valueOf(symbol),state1);
         return this;
     }
+    public FiniteStateTransducer addTransitionRange(String state0,char symbol0,String state1,char symbol1){
+        for(char i=symbol0;i<=symbol1;i++){
+            addTransition(state0,i,state1);
+        }
+        return this;
+    }
     public static FiniteStateTransducer load(String path) throws IOException {
         FiniteStateTransducer ret=null;
         JSONParser parser = new JSONParser();
@@ -138,5 +144,9 @@ public abstract class FiniteStateTransducer implements Serializable {
             }
         }
         return true;
+    }
+
+    public HashSet<Character> getInputAlpha() {
+        return inputAlpha;
     }
 }

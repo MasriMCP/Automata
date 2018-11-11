@@ -43,14 +43,13 @@ public class StartPaneController {
             f.addDescription(desc.getText());
             Stage primaryStage = new Stage();
             ((Stage)((Node)event.getSource()).getScene().getWindow()).close();
-            FXMLLoader loader = new FXMLLoader(new File("Resources/View/draw_pane.fxml").toURL());
+            FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
             Parent root = loader.load();
-            ((DrawPaneController)loader.getController()).setFST(f);
-            Scene scene = new Scene(root, 600, 450);
+            ((MainController)loader.getController()).setFST(f);
+            Scene scene = new Scene(root, 700, 600);
             primaryStage.setTitle("Theory of Automata");
             primaryStage.setScene(scene);
             primaryStage.show();
-
         }
     }
     @FXML

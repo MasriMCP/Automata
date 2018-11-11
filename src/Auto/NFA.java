@@ -37,6 +37,7 @@ public class NFA extends MooreMachine{
     }
 
     private boolean run(String input,String state){
+
         if(input.length()==0){
             //if the input length == 0 then there are no more possible transitions and we need to check
             //if this is a final state.
