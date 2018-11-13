@@ -20,9 +20,9 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
   <children>
-    <MenuBar VBox.vgrow="NEVER">
+    <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -110,7 +110,7 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <Label text="Type: ">
+                  <Label fx:id="typeLabel" text="Type: ">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -187,6 +187,9 @@
                         <Insets bottom="10.0" left="10.0" />
                      </VBox.margin>
                   </Label>
+                  <Separator prefWidth="200.0" />
+                  <Button mnemonicParsing="false" onAction="#debug" text="debug" />
+                  <Label fx:id="debugLabel" text="debug" wrapText="true" />
                </children>
             </VBox>
       </items>

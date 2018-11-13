@@ -15,8 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        FXMLLoader loader = new FXMLLoader(new File("C:\\Users\\jit\\IdeaProjects\\Automata\\Resources" +
-                "\\view\\start_pane.fxml").toURL());
+        FXMLLoader loader = new FXMLLoader(new File("Resources\\View\\start_pane.fxml").toURL());
         Parent root = loader.load();
         Scene scene = new Scene(root, 600, 450);
         primaryStage.setTitle("Theory of Automata");

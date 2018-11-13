@@ -69,6 +69,10 @@ public class MainController {
     private Color x4;
     @FXML
     private AnchorPane drawPane;
+    @FXML
+    private Label typeLabel;
+    @FXML
+    MenuBar menuBar;
 
     @FXML
     void run(ActionEvent event) {
@@ -124,6 +128,7 @@ public class MainController {
     void setFST(FiniteStateTransducer fst){
         this.fst = fst;
         stateSet = new HashSet<>();
+        typeLabel.setText("Type:"+fst.getClass().getSimpleName());
         nameLabel.setText("Name: "+fst.getName());
         descLabel.setText("Description: "+fst.describe());
 
@@ -152,7 +157,7 @@ public class MainController {
             stateSet.add(s);
             s.setName(name);
             s.setLableFill(COLOR_TEXT_SELECTED);
-            s.setOnMouseClicked((e)->{
+            s.setOnMousePressed((e)->{
                 if(connecting){
                     addTransition(selected,'0',s);
                 }
@@ -173,8 +178,8 @@ public class MainController {
             });
             s.setOnMouseDragged((e)->{
                 if(mode ==SELECT){
-                    selected.setCenterX(e.getSceneX());
-                    selected.setCenterY(e.getSceneY());
+                    selected.setCenterX(e.getSceneX()-toolBox.getWidth());
+                    selected.setCenterY(e.getSceneY()-menuBar.getHeight());
                 }
                 if(mode == CONNECT){
 
@@ -268,6 +273,11 @@ public class MainController {
             }
         }
         return false;
+    }
+    @FXML Label debugLabel;
+    @FXML
+    void debug(){
+        debugLabel.setText(fst.toString());
     }
 
 }
