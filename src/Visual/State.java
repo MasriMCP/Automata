@@ -11,14 +11,15 @@ import javafx.scene.text.Font;
 import java.util.HashMap;
 
 public class State extends StackPane {
-    public final static double R =15;
+    public final static double R = 15;
     private Circle circle = new Circle();
     private Label nameLabel = new Label();
-    public State(double x,double y){
+
+    public State(double x, double y) {
         setCenterX(x);
         setCenterY(y);
         circle.setRadius(R);
-        getChildren().addAll(circle,nameLabel);
+        getChildren().addAll(circle, nameLabel);
 
     }
 
@@ -30,22 +31,28 @@ public class State extends StackPane {
     public void setName(String name) {
         nameLabel.setText(name);
     }
-    public void setCircleFill(Paint paint){
+
+    public void setCircleFill(Paint paint) {
         circle.setFill(paint);
     }
-    public void setLableFill(Paint paint){
+
+    public void setLableFill(Paint paint) {
         nameLabel.setTextFill(paint);
     }
-    public void setCenterX(double value){
-        setLayoutX(value-R);
+
+    public void setCenterX(double value) {
+        setLayoutX(value - R);
     }
-    public void setCenterY(double value){
-        setLayoutY(value-R);
+
+    public void setCenterY(double value) {
+        setLayoutY(value - R);
     }
-    public double getCenterX(){
-        return getLayoutX()+R;
+
+    public double getCenterX() {
+        return getLayoutX() + R;
     }
-    public double getCenterY(){
-        return getLayoutY()+R;
+
+    public double getCenterY() {
+        return getLayoutY() + R;
     }
 }

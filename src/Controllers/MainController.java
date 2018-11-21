@@ -8,7 +8,12 @@ import Visual.Transition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -17,10 +22,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import org.json.simple.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -34,6 +43,8 @@ public class MainController {
             COLOR_TRANSITION_NOT_SELECTED=Color.ORANGE;//colors used
     private boolean connecting = false;// is true when the user is creating a transition between two states
     public final static int SELECT=0,ADD=1,CONNECT=2,DELETE=3,INITIAL=4,FINAL=5;
+    HashSet<Transition> transitionSet = new HashSet<>();
+    final FileChooser fileChooser = new FileChooser();
     private int mode =SELECT;
     @FXML
     private VBox toolBox;
@@ -161,7 +172,7 @@ public class MainController {
                 if(connecting){
                     addTransition(selected,'0',s);
                 }
-                else if(mode==SELECT||mode ==CONNECT||mode ==INITIAL||mode ==FINAL){
+                else if(mode==SELECT||mode ==CONNECT||mode ==INITIAL||mode ==FINAL||mode==DELETE){
                     if(selected!=null) selected.setCircleFill(COLOR_NOT_SELECTED);
                     selected = s;
                     selected.setCircleFill(COLOR_SELECTED);
@@ -173,6 +184,9 @@ public class MainController {
                     }
                     if(mode==FINAL){
                         setFinal(s);
+                    }
+                    if(mode==DELETE){
+                        deleteState(s);
                     }
                 }
             });
@@ -200,23 +214,48 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(str -> {
-            Transition trans = new Transition(s0,s1);
-            trans.setFill(COLOR_TRANSITION_NOT_SELECTED);
-            drawPane.getChildren().add(trans);
+            Transition trans=null;
+            if(fst.isConnected(s0.getName(),s1.getName())){
+                for(Transition t:transitionSet){
+                    if(t.getS0()==s0&&t.getS1()==s1) trans = t;
+                }
+            }
+            else {
+                trans = new Transition(s0, s1);
+                transitionSet.add(trans);
+                trans.setFill(COLOR_TRANSITION_NOT_SELECTED);
+                drawPane.getChildren().add(trans);
+            }
+
             connecting = false;
             if(str.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")){
                 fst.addTransitionRange(s0.getName(),str.charAt(0),s1.getName(),str.charAt(3));
+                trans.addSymbolRange(str.charAt(0),str.charAt(3));
             }
             else{
                 String[] temp = str.split("\\s+|,");//one or more spaces or a comma
                 for(int i=0;i<temp.length;i++){
                     fst.addTransition(s0.getName(),temp[i].charAt(0),s1.getName());
-
+                    trans.addSymbol(temp[i].charAt(0));
                 }
 
             }
+
+
         });
 
+    }
+    private void deleteState(State state){
+        HashSet<Transition> temp = new HashSet<>();
+        for(Transition t:transitionSet){
+            if(t.getS0()==state||t.getS1()==state){
+                temp.add(t);
+            }
+        }
+        transitionSet.removeAll(temp);
+        drawPane.getChildren().removeAll(temp);
+        drawPane.getChildren().remove(state);
+        fst.delete(state.getName());
     }
     private void setInitial(State s){
         fst.setInitialState(s.getName());
@@ -278,6 +317,25 @@ public class MainController {
     @FXML
     void debug(){
         debugLabel.setText(fst.toString());
+    }
+    @FXML
+    void save(ActionEvent event){
+        HashMap<String,String> vertices = new HashMap<>();
+        for(State s:stateSet){
+            vertices.put(s.getName(),String.valueOf(s.getCenterX())+","+String.valueOf(s.getCenterY()));
+        }
+        JSONObject obj = new JSONObject();
+        obj.put("vertices",vertices);
+        obj.put("fst",fst.toString());
+        /*try {
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileChooser.showOpenDialog(
+                     ( event.getSource()).getScene().getWindow()))));
+            out.write(obj.toJSONString());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
     }
 
 }
