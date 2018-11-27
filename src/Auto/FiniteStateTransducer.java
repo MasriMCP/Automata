@@ -109,14 +109,7 @@ public abstract class FiniteStateTransducer {
         return ret;//TODO this
     }
 
-    public void save() {
-        String path = name + "." + type;
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path)))) {
-            writer.write(this.toString());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+
 
     public abstract String run(String input);
 

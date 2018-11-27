@@ -327,15 +327,18 @@ public class MainController {
         JSONObject obj = new JSONObject();
         obj.put("vertices",vertices);
         obj.put("fst",fst.toString());
-        /*try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileChooser.showOpenDialog(
-                     ( event.getSource()).getScene().getWindow()))));
+        FileChooser chooser =new FileChooser();
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST",".fst"));
+
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(chooser
+        .showSaveDialog(drawPane.getScene().getWindow()))))){
+
             out.write(obj.toJSONString());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
 }
