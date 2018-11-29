@@ -5,11 +5,11 @@ import java.util.HashMap;
 public class MealyMachine extends FiniteStateTransducer {
     public MealyMachine() {
         super();
-        outputMap = new HashMap<>();
+
     }
 
     public MealyMachine addTransitionOutput(String state0, char symbol, String state1, char output) {
-        if (!outputAlpha.contains(output)) throw new IllegalArgumentException("no such symbol: " + output);
+        if (!outputAlpha.contains(output)) throw new IllegalArgumentException("no such symbol: " + output+"in the output alphabet");
         addTransition(state0, symbol, state1);
         outputMap.put(state0 + String.valueOf(symbol), output);
         return this;

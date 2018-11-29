@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 public class State extends StackPane {
     public final static double R = 15;
+    private static final double STROKE_WIDTH = 5;
     private Circle circle = new Circle();
     private Label nameLabel = new Label();
 
@@ -35,6 +36,11 @@ public class State extends StackPane {
     public void setCircleFill(Paint paint) {
         circle.setFill(paint);
     }
+    public void setCircleStroke(Paint paint){
+        if(paint==null){circle.setStrokeWidth(0);return;}
+        circle.setStroke(paint);
+        circle.setStrokeWidth(STROKE_WIDTH);
+    }
 
     public void setLableFill(Paint paint) {
         nameLabel.setTextFill(paint);
@@ -54,5 +60,8 @@ public class State extends StackPane {
 
     public double getCenterY() {
         return getLayoutY() + R;
+    }
+    public void setInitial(){
+
     }
 }

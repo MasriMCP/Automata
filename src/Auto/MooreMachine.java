@@ -5,7 +5,6 @@ import java.util.HashMap;
 public class MooreMachine extends FiniteStateTransducer {
     public MooreMachine() {
         super();
-        outputMap = new HashMap<>();
     }
 
     public MooreMachine addStateOutput(String state, char output) {

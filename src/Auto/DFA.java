@@ -1,5 +1,7 @@
 package Auto;
 
+import java.util.NoSuchElementException;
+
 public class DFA extends MooreMachine {
     public DFA() {
         super();
@@ -19,6 +21,10 @@ public class DFA extends MooreMachine {
         }
         return this;
     }
+    public void deleteFinalState(String state){
+        outputMap.put(state,'0');
+    }
+
 
     public boolean isAccepted(String input) {
         return run(input).charAt(input.length()) == '1';

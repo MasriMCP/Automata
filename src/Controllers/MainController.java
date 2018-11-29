@@ -7,26 +7,21 @@ import Visual.State;
 import Visual.Transition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
-import java.awt.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,13 +29,17 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public class MainController {
+
     private FiniteStateTransducer fst;
     HashSet<State> stateSet;
-    private State selected;//the currently selected state
+    private Transition connectingTransition;//only used while the user is dragging a transition arrow
+    private State selected,hovered;//the currently selected state
     private final static Paint COLOR_SELECTED = Color.RED,
-            COLOR_NOT_SELECTED = Color.BLACK,
+            COLOR_NOT_SELECTED = Color.DARKGRAY,
             COLOR_TEXT_SELECTED = Color.WHITE,
-            COLOR_TRANSITION_NOT_SELECTED=Color.ORANGE;//colors used
+            COLOR_TRANSITION_NOT_SELECTED=Color.ORANGE,
+            COLOR_FINAL_STROKE = Color.BLACK,
+            COLOR_HOVER_STATE = Color.PURPLE;//colors used
     private boolean connecting = false;// is true when the user is creating a transition between two states
     public final static int SELECT=0,ADD=1,CONNECT=2,DELETE=3,INITIAL=4,FINAL=5;
     HashSet<Transition> transitionSet = new HashSet<>();
@@ -84,7 +83,7 @@ public class MainController {
     private Label typeLabel;
     @FXML
     MenuBar menuBar;
-
+    ImageView arrow;
     @FXML
     void run(ActionEvent event) {
         if(fst instanceof DFA){
@@ -101,7 +100,6 @@ public class MainController {
     @FXML
     void toolAdd(ActionEvent event) {
         mode=ADD;
-        connecting = false;
         modeLabel.setText("add");
     }
 
@@ -114,26 +112,22 @@ public class MainController {
     @FXML
     void toolDelete(ActionEvent event) {
         mode=DELETE;
-        connecting = false;
         modeLabel.setText("delete");
     }
 
     @FXML
     void toolFinal(ActionEvent event) {
         mode=FINAL;
-        connecting = false;
     }
 
     @FXML
     void toolInitial(ActionEvent event){
         mode = INITIAL;
-        connecting = false;
     }
 
     @FXML
     void toolSelect(ActionEvent event) {
         mode=SELECT;
-        connecting = false;
         modeLabel.setText("select");
     }
     void setFST(FiniteStateTransducer fst){
@@ -142,6 +136,17 @@ public class MainController {
         typeLabel.setText("Type:"+fst.getClass().getSimpleName());
         nameLabel.setText("Name: "+fst.getName());
         descLabel.setText("Description: "+fst.describe());
+        try {
+            arrow = new ImageView(new Image(new FileInputStream("Resources/images/arrow.png")));
+            arrow.setFitHeight(20);
+            arrow.setFitWidth(20);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        connectingTransition = new Transition(null,null);
+        connectingTransition.setStart(-100,-100);
+        connectingTransition.setEnd(-100,-100);
+        drawPane.getChildren().add(connectingTransition);
 
     }
     public void mouseClick(MouseEvent mouseEvent){
@@ -155,7 +160,7 @@ public class MainController {
 
     private State addState(double x,double y){
         State s = new State(x,y);
-
+        s.setCircleFill(COLOR_NOT_SELECTED);
         dialog.setTitle("name");
         dialog.setHeaderText("Enter state name:");
         dialog.setContentText("Name:");
@@ -163,47 +168,84 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(name -> {
-            fst.addState(name);
-            drawPane.getChildren().add(s);
-            stateSet.add(s);
-            s.setName(name);
-            s.setLableFill(COLOR_TEXT_SELECTED);
-            s.setOnMousePressed((e)->{
-                if(connecting){
-                    addTransition(selected,'0',s);
+            //check for naming redundancy
+            for(State i:stateSet){
+                if(i.getName().equals(name)){
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Warning");
+                    alert.setHeaderText("Cannot add state");
+                    alert.setContentText("There's already a state named \""+name+"\"");
+
+                    alert.showAndWait();
+                    return;
                 }
-                else if(mode==SELECT||mode ==CONNECT||mode ==INITIAL||mode ==FINAL||mode==DELETE){
-                    if(selected!=null) selected.setCircleFill(COLOR_NOT_SELECTED);
-                    selected = s;
-                    selected.setCircleFill(COLOR_SELECTED);
-                    if(mode==CONNECT){
-                        connecting=true;
+            }
+
+
+                fst.addState(name);
+                drawPane.getChildren().add(s);
+                stateSet.add(s);
+                s.setName(name);
+                s.setLableFill(COLOR_TEXT_SELECTED);
+                s.setOnMousePressed((e)->{
+                    if(false){
                     }
-                    if(mode==INITIAL){
-                        setInitial(s);
+                    else if(mode==SELECT||mode==CONNECT||mode ==INITIAL||mode ==FINAL||mode==DELETE){
+                        if(selected!=null) selected.setCircleFill(COLOR_NOT_SELECTED);
+                        selected = s;
+                        selected.setCircleFill(COLOR_SELECTED);
+                        if(mode==INITIAL){
+                            setInitial(s);
+                        }
+                        if(mode==FINAL){
+                            setFinal(s);
+                        }
+                        if(mode==DELETE){
+                            deleteState(s);
+                        }
                     }
-                    if(mode==FINAL){
-                        setFinal(s);
+                });
+                s.setOnMouseDragged((e)->{
+                    if(mode ==SELECT){
+                        selected.setCenterX(e.getSceneX()-toolBox.getWidth());
+                        selected.setCenterY(e.getSceneY()-menuBar.getHeight());
                     }
-                    if(mode==DELETE){
-                        deleteState(s);
+                    else if(mode == CONNECT){
+                        connectingTransition.setStart(s.getCenterX(),s.getCenterY());
+                        connectingTransition.setEnd(e.getSceneX()-toolBox.getWidth(),e.getSceneY()-menuBar.getHeight());
+                        connecting = true;
                     }
-                }
-            });
-            s.setOnMouseDragged((e)->{
-                if(mode ==SELECT){
-                    selected.setCenterX(e.getSceneX()-toolBox.getWidth());
-                    selected.setCenterY(e.getSceneY()-menuBar.getHeight());
-                }
-                if(mode == CONNECT){
+                });
+                s.setOnMouseReleased((e)->{
+                    if(connecting){
+                        connecting = false;
+                        connectingTransition.setStart(-100,-100);
+                        connectingTransition.setEnd(-100,-100);
+                        if(hovered!=null){
+                            addTransition(s,hovered);
+                        }
 
                 }
             });
+            s.setOnMouseEntered((e)->{
+                s.setCircleFill(COLOR_HOVER_STATE);
+                hovered = s;
+            });
+            s.setOnMouseExited((e)->{
+                hovered = null;
+                if(s==selected){
+                    s.setCircleFill(COLOR_SELECTED);
+                }
+                else{
+                    s.setCircleFill(COLOR_NOT_SELECTED);
+                }
+            });
+
         });
         dialog.setResult("");
         return s;
     }
-    private void addTransition(State s0,char symbol,State s1){
+    private void addTransition(State s0,State s1){
 
         TextInputDialog dialog = new TextInputDialog();
 
@@ -226,8 +268,6 @@ public class MainController {
                 trans.setFill(COLOR_TRANSITION_NOT_SELECTED);
                 drawPane.getChildren().add(trans);
             }
-
-            connecting = false;
             if(str.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")){
                 fst.addTransitionRange(s0.getName(),str.charAt(0),s1.getName(),str.charAt(3));
                 trans.addSymbolRange(str.charAt(0),str.charAt(3));
@@ -253,22 +293,42 @@ public class MainController {
             }
         }
         transitionSet.removeAll(temp);
+        stateSet.remove(state);
         drawPane.getChildren().removeAll(temp);
         drawPane.getChildren().remove(state);
         fst.delete(state.getName());
     }
     private void setInitial(State s){
         fst.setInitialState(s.getName());
-        s.setCircleFill(Color.CYAN);
+        if(!drawPane.getChildren().contains(arrow)) drawPane.getChildren().add(arrow);
+        arrow.xProperty().unbind();arrow.yProperty().unbind();
+        arrow.xProperty().bind(s.layoutXProperty().subtract(State.R));
+        arrow.yProperty().bind(s.layoutYProperty().subtract(State.R-10));
     }
     private void setFinal(State s){
         if(fst instanceof DFA){
-            ((DFA)(fst)).setFinalState(s.getName());
+            //if it's already a final state
+            if(fst.getOutputMap().get(s.getName())=='1'){
+                ((DFA)(fst)).deleteFinalState(s.getName());
+                s.setCircleStroke(null);
+            }
+            else {
+                ((DFA)(fst)).setFinalState(s.getName());
+                s.setCircleStroke(COLOR_FINAL_STROKE);
+            }
         }
         else if(fst instanceof NFA){
-            ((NFA)(fst)).setFinalState(s.getName());
+            //if it's already a final state
+            if(fst.getOutputMap().get(s)=='1') {
+                ((NFA)(fst)).deleteFinalState(s.getName());
+                s.setCircleStroke(null);
+            }
+            else {
+                ((NFA)(fst)).setFinalState(s.getName());
+                s.setCircleStroke(COLOR_FINAL_STROKE);
+            }
         }
-        s.setCircleFill(Color.YELLOW);
+
     }
     private void select(MouseEvent e){
         for(State s:stateSet){

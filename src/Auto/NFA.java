@@ -23,6 +23,9 @@ public class NFA extends MooreMachine {
         }
         return this;
     }
+    public void deleteFinalState(String state){
+        outputMap.put(state,'0');
+    }
 
     public NFA addTransition(String state0, char symbol, String state1) {
         if (!states.contains(state0)) throw new IllegalArgumentException("no such state: " + state0);
