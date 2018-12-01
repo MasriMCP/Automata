@@ -7,6 +7,7 @@ import Visual.State;
 import Visual.Transition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
@@ -23,23 +24,21 @@ import javafx.stage.FileChooser;
 import org.json.simple.JSONObject;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 public class MainController {
 
     private FiniteStateTransducer fst;
     HashSet<State> stateSet;
-    private Transition connectingTransition;//only used while the user is dragging a transition arrow
-    private State selected,hovered;//the currently selected state
+    private Transition connectingTransition;//only used while the user is dragging a transition initStateArrow
+    private Node selected,hovered;//the currently selected state
     private final static Paint COLOR_SELECTED = Color.RED,
             COLOR_NOT_SELECTED = Color.DARKGRAY,
             COLOR_TEXT_SELECTED = Color.WHITE,
-            COLOR_TRANSITION_NOT_SELECTED=Color.ORANGE,
             COLOR_FINAL_STROKE = Color.BLACK,
-            COLOR_HOVER_STATE = Color.PURPLE;//colors used
+            COLOR_HOVER_STATE = Color.PURPLE,
+            COLOR_TRANSITION_SELECTED=Color.RED,
+            COLOR_TRANSITION_NOT_SELECTED=Color.ORANGE;//colors used
     private boolean connecting = false;// is true when the user is creating a transition between two states
     public final static int SELECT=0,ADD=1,CONNECT=2,DELETE=3,INITIAL=4,FINAL=5;
     HashSet<Transition> transitionSet = new HashSet<>();
@@ -83,7 +82,7 @@ public class MainController {
     private Label typeLabel;
     @FXML
     MenuBar menuBar;
-    ImageView arrow;
+    ImageView initStateArrow;
     @FXML
     void run(ActionEvent event) {
         if(fst instanceof DFA){
@@ -137,9 +136,9 @@ public class MainController {
         nameLabel.setText("Name: "+fst.getName());
         descLabel.setText("Description: "+fst.describe());
         try {
-            arrow = new ImageView(new Image(new FileInputStream("Resources/images/arrow.png")));
-            arrow.setFitHeight(20);
-            arrow.setFitWidth(20);
+            initStateArrow = new ImageView(new Image(new FileInputStream("Resources/images/arrow.png")));
+            initStateArrow.setFitHeight(20);
+            initStateArrow.setFitWidth(20);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -191,9 +190,17 @@ public class MainController {
                     if(false){
                     }
                     else if(mode==SELECT||mode==CONNECT||mode ==INITIAL||mode ==FINAL||mode==DELETE){
-                        if(selected!=null) selected.setCircleFill(COLOR_NOT_SELECTED);
+
+                        if(selected!=null){
+                            if(selected instanceof State){
+                                ((State)selected).setCircleFill(COLOR_NOT_SELECTED);
+                            }
+                            else if(selected instanceof Transition){
+                                ((Transition)selected).setFill(COLOR_TRANSITION_NOT_SELECTED);
+                            }
+                        }
                         selected = s;
-                        selected.setCircleFill(COLOR_SELECTED);
+                        ((State)selected).setCircleFill(COLOR_SELECTED);
                         if(mode==INITIAL){
                             setInitial(s);
                         }
@@ -207,8 +214,8 @@ public class MainController {
                 });
                 s.setOnMouseDragged((e)->{
                     if(mode ==SELECT){
-                        selected.setCenterX(e.getSceneX()-toolBox.getWidth());
-                        selected.setCenterY(e.getSceneY()-menuBar.getHeight());
+                        s.setCenterX(e.getSceneX()-toolBox.getWidth());
+                        s.setCenterY(e.getSceneY()-menuBar.getHeight());
                     }
                     else if(mode == CONNECT){
                         connectingTransition.setStart(s.getCenterX(),s.getCenterY());
@@ -219,15 +226,23 @@ public class MainController {
                 s.setOnMouseReleased((e)->{
                     if(connecting){
                         connecting = false;
+                        //remove the connecting initStateArrow from the screen
                         connectingTransition.setStart(-100,-100);
                         connectingTransition.setEnd(-100,-100);
-                        if(hovered!=null){
-                            addTransition(s,hovered);
+                        //the MouseEntered event does not fire while dragging and fires after the MouseReleased
+                        //so the hovered variable would be null and cannot be used here
+                        State connectTo = null;
+                        for(State i:stateSet){
+                            if(dist(i.getCenterX(),i.getCenterY(),e.getSceneX()-toolBox.getWidth(),e.getSceneY()-menuBar.getHeight())<State.R){
+                                connectTo = i;
+                            }
                         }
-
+                        if(connectTo!=null)
+                        addTransition(s,connectTo);
                 }
             });
             s.setOnMouseEntered((e)->{
+                if(s!=selected)
                 s.setCircleFill(COLOR_HOVER_STATE);
                 hovered = s;
             });
@@ -256,31 +271,150 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(str -> {
+
+            //compile a list of legal symbols and another list of illegal symbols
+            LinkedList<Character> illegalSymbolList = new LinkedList<>(),legalSymbolsList = new LinkedList<>();
+            //if it's in the form letter..letter or number..number
+            if(str.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")){
+                char symbol0 = str.charAt(0),symbol1 = str.charAt(3);
+                if(symbol1>symbol0)
+                    for (char i = symbol0; i <= symbol1; i++) {
+                        if(fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
+                        else illegalSymbolList.add(i);
+
+                    }
+                else
+                    for (char i = symbol1; i <= symbol0; i++) {
+                        if(fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
+                        else illegalSymbolList.add(i);
+                    }
+            }
+            else{
+                String[] temp = str.split("\\s+|,");//one or more spaces or a comma
+                for(int i=0;i<temp.length;i++){
+                    if(fst.getInputAlpha().contains(temp[i].charAt(0))) legalSymbolsList.add(temp[i].charAt(0));
+                    else illegalSymbolList.add(temp[i].charAt(0));
+                }
+            }
+            //reference to the transition object
             Transition trans=null;
+            //if the two states are already connected, find a reference to the transition object that connects them
             if(fst.isConnected(s0.getName(),s1.getName())){
                 for(Transition t:transitionSet){
                     if(t.getS0()==s0&&t.getS1()==s1) trans = t;
                 }
             }
+            //otherwise, create a new transition object
             else {
                 trans = new Transition(s0, s1);
-                transitionSet.add(trans);
-                trans.setFill(COLOR_TRANSITION_NOT_SELECTED);
-                drawPane.getChildren().add(trans);
+                trans.setOnMouseClicked(e->{
+                    if(mode==SELECT){
+                        if(selected!=null){
+                            if(selected instanceof State){
+                                ((State)selected).setCircleFill(COLOR_NOT_SELECTED);
+                            }
+                            else if(selected instanceof Transition){
+                                ((Transition)selected).setFill(COLOR_TRANSITION_NOT_SELECTED);
+                            }
+                        }
+                        selected = (Transition)e.getSource();
+                        ((Transition)selected).setFill(COLOR_TRANSITION_SELECTED);
+                    }
+                    else if(mode==DELETE){
+                        Transition deletedTransition = (Transition)e.getSource();
+                        //
+                        TextInputDialog deleteDialog = new TextInputDialog();
+
+                        deleteDialog.setTitle("delete transition");
+                        deleteDialog.setHeaderText("Enter a list or range of symbols to delete:");
+                        deleteDialog.setContentText("symbols:");
+
+                        Optional<String> deleteResult = deleteDialog.showAndWait();
+
+                        deleteResult.ifPresent(deleteString-> {
+                            if (deleteString.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")) {
+                                char symbol0 = deleteString.charAt(0), symbol1 =deleteString.charAt(3);
+                                if (symbol1 > symbol0)
+                                    for (char i = symbol0; i <= symbol1; i++) {
+                                        if (fst.getInputAlpha().contains(i)){
+                                            fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1());
+                                            deletedTransition.getSymbols().remove(i);
+                                        }
+
+                                    }
+                                else
+                                    for (char i = symbol1; i <= symbol0; i++) {
+                                        if (fst.getInputAlpha().contains(i)){
+                                            fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1());
+                                            deletedTransition.getSymbols().remove(i);
+
+                                        }
+                                    }
+                            }
+                            else {
+                                String[] deleteTemp =deleteString.split("\\s+|,");//one or more spaces or a comma
+                                for (int i = 0; i < deleteTemp.length; i++) {
+                                    if (fst.getInputAlpha().contains(deleteTemp[i].charAt(0))){
+                                        fst.deleteTransition(deletedTransition.getS0().getName(), deleteTemp[i].charAt(0), deletedTransition.getS1());
+                                        deletedTransition.getSymbols().remove( deleteTemp[i].charAt(0));
+
+                                    }
+
+                                }
+                            }
+                            if(deletedTransition.getSymbols().size()==0){
+                                drawPane.getChildren().remove(deletedTransition);
+                            }
+                            //add the newly added symbols to the input alpha label
+                            Object[] sorted = fst.getInputAlpha().toArray();
+                            Arrays.sort(sorted);
+                            inputAlphaLabel.setText(Arrays.toString(sorted));
+
+                        });
+                        deletedTransition.updateLabel();
+                    }
+                });
+
             }
-            if(str.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")){
-                fst.addTransitionRange(s0.getName(),str.charAt(0),s1.getName(),str.charAt(3));
-                trans.addSymbolRange(str.charAt(0),str.charAt(3));
-            }
-            else{
-                String[] temp = str.split("\\s+|,");//one or more spaces or a comma
-                for(int i=0;i<temp.length;i++){
-                    fst.addTransition(s0.getName(),temp[i].charAt(0),s1.getName());
-                    trans.addSymbol(temp[i].charAt(0));
+
+            if(legalSymbolsList.size()>0) {
+
+                //only add a transition if there are legal symbols to be added
+                if(!drawPane.getChildren().contains(trans)){
+                    transitionSet.add(trans);
+                    drawPane.getChildren().add(trans);
+                    trans.toBack();
                 }
-
+                for (char i : legalSymbolsList) {
+                    fst.addTransition(s0.getName(), i, s1.getName());
+                    trans.addSymbol(i);
+                }
             }
+            if(illegalSymbolList.size()>0){
 
+                Alert illegalSymbolsAlert = new Alert(Alert.AlertType.WARNING,
+                        "symbols: "+illegalSymbolList.toString()+" are not in the input alphabet." +
+                                "would you like to add them?",ButtonType.YES,ButtonType.NO);
+                illegalSymbolsAlert.setTitle("Illegal symbols");
+                Optional<ButtonType> illegalSymbolsResult = illegalSymbolsAlert.showAndWait();
+                if(illegalSymbolsResult.get()==ButtonType.YES){
+                    //if the transition object has not already been added (no legal symbols)
+                    if(!drawPane.getChildren().contains(trans)){
+                        transitionSet.add(trans);
+                        drawPane.getChildren().add(trans);
+                        trans.toBack();
+                    }
+                    for(char i:illegalSymbolList){
+                        fst.addInputAlpha(i);
+                        fst.addTransition(s0.getName(),i,s1.getName());
+                        trans.addSymbol(i);
+                    }
+                    //add the newly added symbols to the input alpha label
+                    Object[] sorted = fst.getInputAlpha().toArray();
+                    Arrays.sort(sorted);
+                    inputAlphaLabel.setText(Arrays.toString(sorted));
+                }
+            }
 
         });
 
@@ -300,10 +434,11 @@ public class MainController {
     }
     private void setInitial(State s){
         fst.setInitialState(s.getName());
-        if(!drawPane.getChildren().contains(arrow)) drawPane.getChildren().add(arrow);
-        arrow.xProperty().unbind();arrow.yProperty().unbind();
-        arrow.xProperty().bind(s.layoutXProperty().subtract(State.R));
-        arrow.yProperty().bind(s.layoutYProperty().subtract(State.R-10));
+        if(!drawPane.getChildren().contains(initStateArrow)) drawPane.getChildren().add(initStateArrow);
+        initStateArrow.xProperty().unbind();
+        initStateArrow.yProperty().unbind();
+        initStateArrow.xProperty().bind(s.layoutXProperty().subtract(State.R));
+        initStateArrow.yProperty().bind(s.layoutYProperty().subtract(State.R-10));
     }
     private void setFinal(State s){
         if(fst instanceof DFA){
@@ -330,16 +465,6 @@ public class MainController {
         }
 
     }
-    private void select(MouseEvent e){
-        for(State s:stateSet){
-            if(dist(e.getX(),e.getY(),s.getCenterX(),s.getCenterY())<State.R){
-                if(selected!=null) selected.setCircleFill(COLOR_NOT_SELECTED);
-                selected = s;
-                selected.setCircleFill(COLOR_SELECTED);
-
-            }
-        }
-    }
     @FXML
     public void inputAlphaAdd(ActionEvent event){
 
@@ -359,7 +484,6 @@ public class MainController {
         Arrays.sort(sorted);
         inputAlphaLabel.setText(Arrays.toString(sorted));
         inputAlphaText.setText("");
-        System.out.println(fst);
     }
     //returns the distance between two points (x0,y0) and (x1,y1)
     private double dist(double x0,double y0,double x1, double y1){
@@ -398,6 +522,22 @@ public class MainController {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    @FXML
+    public void clear(ActionEvent e){
+        Alert clearAlert = new Alert(Alert.AlertType.WARNING,
+                "are you sure? this will delete all states and transitions.",ButtonType.YES,ButtonType.NO);
+        clearAlert.setTitle("Clear");
+        Optional<ButtonType>clearResult =clearAlert.showAndWait();
+        if(clearResult.get()==ButtonType.YES){
+            HashSet<State> copy = new HashSet<>();
+            for(State i:stateSet){
+                copy.add(i);
+            }
+            for(State i:copy){
+                deleteState(i);
+            }
         }
     }
 

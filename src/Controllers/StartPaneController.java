@@ -53,7 +53,7 @@ public class StartPaneController {
             FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
             Parent root = loader.load();
             ((MainController) loader.getController()).setFST(f);
-            Scene scene = new Scene(root, 700, 600);
+            Scene scene = new Scene(root, 800, 600);
             primaryStage.setTitle("Theory of Automata");
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -82,7 +82,7 @@ public class StartPaneController {
             FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
             Parent root = loader.load();
             ((MainController) loader.getController()).setFST(f);
-            Scene scene = new Scene(root, 700, 600);
+            Scene scene = new Scene(root, 800, 600);
             primaryStage.setTitle("Theory of Automata");
             primaryStage.setScene(scene);
             primaryStage.show();

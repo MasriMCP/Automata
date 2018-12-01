@@ -1,5 +1,6 @@
 package Auto;
 
+import Visual.State;
 import netscape.javascript.JSObject;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -91,10 +92,17 @@ public abstract class FiniteStateTransducer {
         return this;
     }
 
-    public FiniteStateTransducer addTransitionRange(String state0, char symbol0, String state1, char symbol1) {
-        for (char i = symbol0; i <= symbol1; i++) {
-            addTransition(state0, i, state1);
-        }
+    public FiniteStateTransducer addTransitionRange(String state0, char symbol0, String state1, char symbol1){
+        if(symbol1>symbol0)
+            for (char i = symbol0; i <= symbol1; i++) {
+                    addTransition(state0, i, state1);
+
+            }
+        else
+            for (char i = symbol1; i <= symbol0; i++) {
+                    addTransition(state0, i, state1);
+
+            }
         return this;
     }
 
@@ -188,5 +196,8 @@ public abstract class FiniteStateTransducer {
     }
     public void deleteInitialState(){
         initialState = null;
+    }
+    public void deleteTransition(String s0,char symbol,State s1){
+        transitionMap.remove(s0+String.valueOf(symbol));
     }
 }
