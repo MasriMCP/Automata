@@ -1,16 +1,24 @@
-import Auto.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.net.URL;
+import java.io.FileInputStream;
 
 public class Main extends Application {
+        /*
+            $$\      $$\  $$$$$$\   $$$$$$\  $$$$$$$\  $$$$$$\
+            $$$\    $$$ |$$  __$$\ $$  __$$\ $$  __$$\ \_$$  _|
+            $$$$\  $$$$ |$$ /  $$ |$$ /  \__|$$ |  $$ |  $$ |
+            $$\$$\$$ $$ |$$$$$$$$ |\$$$$$$\  $$$$$$$  |  $$ |
+            $$ \$$$  $$ |$$  __$$ | \____$$\ $$  __$$<   $$ |
+            $$ |\$  /$$ |$$ |  $$ |$$\   $$ |$$ |  $$ |  $$ |
+            $$ | \_/ $$ |$$ |  $$ |\$$$$$$  |$$ |  $$ |$$$$$$\
+            \__|     \__|\__|  \__| \______/ \__|  \__|\______|
+          */
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -19,26 +27,10 @@ public class Main extends Application {
         Parent root = loader.load();
         Scene scene = new Scene(root, 600, 450);
         primaryStage.setTitle("Theory of Automata");
+        primaryStage.getIcons().add(new Image(new FileInputStream(new File("Resources/images/logo.png"))));
         primaryStage.setScene(scene);
         primaryStage.show();
 
 
     }
 }
-/*
-NFA d = new NFA();
-        d.addState("0").addState("1").addState("2");
-        d.addInputAlpha('0')
-                .addInputAlpha('1');
-        d.addTransition("0",'0',"0")
-                .addTransition("0",'1',"0")
-                .addTransition("0",'1',"1")
-                .addTransition("1",'1',"2")
-                .addTransition("2",'1',"2")
-                .addTransition("2",'0',"2");
-        d.setFinalState("2");
-        d.setInitialState("0");
-        d.addDescription("accepts string with two consecutive ones");
-        d.setName("21");
-        d.save();
- */

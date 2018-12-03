@@ -83,4 +83,20 @@ public class NFA extends MooreMachine {
         }
         return set;
     }
+
+    public void deleteTransition(String s0,char symbol,String s1){
+        //TODO not done yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        StringBuilder temp = new StringBuilder(transitionMap.get(s0+String.valueOf(symbol)));
+        System.out.println(transitionMap.get(s0+String.valueOf(symbol)));
+        int index0 = temp.indexOf(s1);
+        int index1=temp.indexOf(",",index0)+1;
+        if(index1==0) index1=temp.length();
+        temp.delete(index0,index1);
+        if(temp.length()==0){
+            transitionMap.remove(s0+String.valueOf(symbol));
+        }
+        else
+            transitionMap.put(s0+String.valueOf(symbol),temp.toString());
+
+    }
 }

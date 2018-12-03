@@ -14,7 +14,7 @@ public class State extends StackPane {
     public final static double R = 15;
     private static final double STROKE_WIDTH = 5;
     private Circle circle = new Circle();
-    private Label nameLabel = new Label();
+    protected Label nameLabel = new Label();
 
     public State(double x, double y) {
         setCenterX(x);

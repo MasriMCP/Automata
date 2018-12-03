@@ -24,7 +24,7 @@ public abstract class FiniteStateTransducer {
     FiniteStateTransducer() {
         states = new HashSet<>();
         transitionMap = new HashMap<>();
-        inputAlpha = new HashSet<Character>();
+        inputAlpha = new HashSet<>();
         outputAlpha = new HashSet<>();
         outputMap = new HashMap<>();
         if (this instanceof MealyMachine) {
@@ -197,7 +197,20 @@ public abstract class FiniteStateTransducer {
     public void deleteInitialState(){
         initialState = null;
     }
-    public void deleteTransition(String s0,char symbol,State s1){
+
+    public void deleteTransition(String s0,char symbol,String s1){
         transitionMap.remove(s0+String.valueOf(symbol));
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getInitialState() {
+        return initialState;
+    }
+
+    public HashSet<Character> getOutputAlpha() {
+        return outputAlpha;
     }
 }

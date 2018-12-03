@@ -1,8 +1,8 @@
 package Controllers;
 
-import Auto.DFA;
-import Auto.FiniteStateTransducer;
-import Auto.NFA;
+import Auto.*;
+import Visual.MealyTransition;
+import Visual.MooreState;
 import Visual.State;
 import Visual.Transition;
 import javafx.event.ActionEvent;
@@ -85,6 +85,13 @@ public class MainController {
     ImageView initStateArrow;
     @FXML
     void run(ActionEvent event) {
+        if(fst.getInitialState()==null){
+            Alert noInitialAlert = new Alert(Alert.AlertType.WARNING,
+                    "No initial state has been set");
+            noInitialAlert.setTitle("cannot run");
+            noInitialAlert.showAndWait();
+            return;
+        }
         if(fst instanceof DFA){
             outputLabel.setText(((DFA)(fst)).isAccepted(inputText.getText())?"accepted":"not accepted");
         }
@@ -92,6 +99,8 @@ public class MainController {
             outputLabel.setText(((NFA)(fst)).isAccepted(inputText.getText())?"accepted":"not accepted");
         }
         else {
+            System.out.println(inputText.getText());
+            System.out.println(fst.run(inputText.getText()));
             outputLabel.setText(fst.run(inputText.getText()));
         }
     }
@@ -157,9 +166,9 @@ public class MainController {
     }
     TextInputDialog dialog = new TextInputDialog();
 
-    private State addState(double x,double y){
-        State s = new State(x,y);
-        s.setCircleFill(COLOR_NOT_SELECTED);
+    private void addState(double x,double y){
+
+
         dialog.setTitle("name");
         dialog.setHeaderText("Enter state name:");
         dialog.setContentText("Name:");
@@ -167,26 +176,46 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(name -> {
+            State s=null;
             //check for naming redundancy
             for(State i:stateSet){
+
                 if(i.getName().equals(name)){
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Warning");
                     alert.setHeaderText("Cannot add state");
                     alert.setContentText("There's already a state named \""+name+"\"");
-
                     alert.showAndWait();
+                    return;//if the nae is redundant, odnt add a state
+                }
+            }
+            if(fst.getType().equals("mor")){
+                TextInputDialog outputDialog = new TextInputDialog();
+                outputDialog.setTitle("state output");
+                outputDialog.setHeaderText("Enter state output:");
+                outputDialog.setContentText("output:");
+                Optional<String> outputResult = outputDialog.showAndWait();
+                if(outputResult.isPresent()){
+                    fst.addOutputAlpha(outputResult.get().charAt(0));
+                    s = new MooreState(x,y,outputResult.get().charAt(0));
+                    ((MooreMachine)fst).addStateOutput(name,outputResult.get().charAt(0));
+                }
+                else{
                     return;
                 }
             }
-
-
+            else{
+                s = new State(x,y);
                 fst.addState(name);
+            }
+
+
                 drawPane.getChildren().add(s);
                 stateSet.add(s);
                 s.setName(name);
                 s.setLableFill(COLOR_TEXT_SELECTED);
                 s.setOnMousePressed((e)->{
+                    State temp = (State)e.getSource();
                     if(false){
                     }
                     else if(mode==SELECT||mode==CONNECT||mode ==INITIAL||mode ==FINAL||mode==DELETE){
@@ -199,31 +228,33 @@ public class MainController {
                                 ((Transition)selected).setFill(COLOR_TRANSITION_NOT_SELECTED);
                             }
                         }
-                        selected = s;
+                        selected = temp;
                         ((State)selected).setCircleFill(COLOR_SELECTED);
                         if(mode==INITIAL){
-                            setInitial(s);
+                            setInitial(temp);
                         }
                         if(mode==FINAL){
-                            setFinal(s);
+                            setFinal(temp);
                         }
                         if(mode==DELETE){
-                            deleteState(s);
+                            deleteState(temp);
                         }
                     }
                 });
                 s.setOnMouseDragged((e)->{
+                    State temp = (State)e.getSource();
                     if(mode ==SELECT){
-                        s.setCenterX(e.getSceneX()-toolBox.getWidth());
-                        s.setCenterY(e.getSceneY()-menuBar.getHeight());
+                        temp.setCenterX(e.getSceneX()-toolBox.getWidth());
+                        temp.setCenterY(e.getSceneY()-menuBar.getHeight());
                     }
                     else if(mode == CONNECT){
-                        connectingTransition.setStart(s.getCenterX(),s.getCenterY());
+                        connectingTransition.setStart(temp.getCenterX(),temp.getCenterY());
                         connectingTransition.setEnd(e.getSceneX()-toolBox.getWidth(),e.getSceneY()-menuBar.getHeight());
                         connecting = true;
                     }
                 });
                 s.setOnMouseReleased((e)->{
+                    State temp = (State)e.getSource();
                     if(connecting){
                         connecting = false;
                         //remove the connecting initStateArrow from the screen
@@ -238,27 +269,28 @@ public class MainController {
                             }
                         }
                         if(connectTo!=null)
-                        addTransition(s,connectTo);
+                        addTransition(temp,connectTo);
                 }
             });
             s.setOnMouseEntered((e)->{
-                if(s!=selected)
-                s.setCircleFill(COLOR_HOVER_STATE);
-                hovered = s;
+                State temp = (State)e.getSource();
+                if(temp!=selected)
+                    temp.setCircleFill(COLOR_HOVER_STATE);
+                hovered = temp;
             });
             s.setOnMouseExited((e)->{
+                State temp = (State)e.getSource();
                 hovered = null;
-                if(s==selected){
-                    s.setCircleFill(COLOR_SELECTED);
+                if(temp==selected){
+                    temp.setCircleFill(COLOR_SELECTED);
                 }
                 else{
-                    s.setCircleFill(COLOR_NOT_SELECTED);
+                    temp.setCircleFill(COLOR_NOT_SELECTED);
                 }
             });
 
         });
         dialog.setResult("");
-        return s;
     }
     private void addTransition(State s0,State s1){
 
@@ -267,33 +299,36 @@ public class MainController {
         dialog.setTitle("Transition");
         dialog.setHeaderText("Enter a list or range of symbols:");
         dialog.setContentText("symbols:");
-
+        HashSet<Character> newlyAddedSymbols = new HashSet<>();
         Optional<String> result = dialog.showAndWait();
-
+        char mealyOutputChar = 0;
         result.ifPresent(str -> {
-
+            TextInputDialog mealyOutputDialog = new TextInputDialog();
+            mealyOutputDialog.setContentText("add an output character");
+            mealyOutputDialog.setHeaderText("add output");
+            Optional<String> mealyOutputResult = null;
             //compile a list of legal symbols and another list of illegal symbols
-            LinkedList<Character> illegalSymbolList = new LinkedList<>(),legalSymbolsList = new LinkedList<>();
+            LinkedList<Character> illegalSymbolsList = new LinkedList<>(),legalSymbolsList = new LinkedList<>();
             //if it's in the form letter..letter or number..number
             if(str.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")){
                 char symbol0 = str.charAt(0),symbol1 = str.charAt(3);
                 if(symbol1>symbol0)
                     for (char i = symbol0; i <= symbol1; i++) {
                         if(fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
-                        else illegalSymbolList.add(i);
+                        else illegalSymbolsList.add(i);
 
                     }
                 else
                     for (char i = symbol1; i <= symbol0; i++) {
                         if(fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
-                        else illegalSymbolList.add(i);
+                        else illegalSymbolsList.add(i);
                     }
             }
             else{
                 String[] temp = str.split("\\s+|,");//one or more spaces or a comma
                 for(int i=0;i<temp.length;i++){
                     if(fst.getInputAlpha().contains(temp[i].charAt(0))) legalSymbolsList.add(temp[i].charAt(0));
-                    else illegalSymbolList.add(temp[i].charAt(0));
+                    else illegalSymbolsList.add(temp[i].charAt(0));
                 }
             }
             //reference to the transition object
@@ -303,10 +338,24 @@ public class MainController {
                 for(Transition t:transitionSet){
                     if(t.getS0()==s0&&t.getS1()==s1) trans = t;
                 }
+                mealyOutputResult = mealyOutputDialog.showAndWait();
             }
+
             //otherwise, create a new transition object
             else {
-                trans = new Transition(s0, s1);
+                if(fst.getType().equals("mea")){
+                     mealyOutputResult = mealyOutputDialog.showAndWait();
+                    trans=new MealyTransition(s0,s1);
+
+
+                    if(!mealyOutputResult.isPresent()){
+                        return;
+                    }
+                }
+                else{
+                    trans = new Transition(s0, s1);
+                }
+
                 trans.setOnMouseClicked(e->{
                     if(mode==SELECT){
                         if(selected!=null){
@@ -337,7 +386,7 @@ public class MainController {
                                 if (symbol1 > symbol0)
                                     for (char i = symbol0; i <= symbol1; i++) {
                                         if (fst.getInputAlpha().contains(i)){
-                                            fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1());
+                                            fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1().getName());
                                             deletedTransition.getSymbols().remove(i);
                                         }
 
@@ -345,7 +394,7 @@ public class MainController {
                                 else
                                     for (char i = symbol1; i <= symbol0; i++) {
                                         if (fst.getInputAlpha().contains(i)){
-                                            fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1());
+                                            fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1().getName());
                                             deletedTransition.getSymbols().remove(i);
 
                                         }
@@ -355,7 +404,7 @@ public class MainController {
                                 String[] deleteTemp =deleteString.split("\\s+|,");//one or more spaces or a comma
                                 for (int i = 0; i < deleteTemp.length; i++) {
                                     if (fst.getInputAlpha().contains(deleteTemp[i].charAt(0))){
-                                        fst.deleteTransition(deletedTransition.getS0().getName(), deleteTemp[i].charAt(0), deletedTransition.getS1());
+                                        fst.deleteTransition(deletedTransition.getS0().getName(), deleteTemp[i].charAt(0), deletedTransition.getS1().getName());
                                         deletedTransition.getSymbols().remove( deleteTemp[i].charAt(0));
 
                                     }
@@ -389,11 +438,12 @@ public class MainController {
                     fst.addTransition(s0.getName(), i, s1.getName());
                     trans.addSymbol(i);
                 }
+                newlyAddedSymbols.addAll(legalSymbolsList);
             }
-            if(illegalSymbolList.size()>0){
+            if(illegalSymbolsList.size()>0){
 
                 Alert illegalSymbolsAlert = new Alert(Alert.AlertType.WARNING,
-                        "symbols: "+illegalSymbolList.toString()+" are not in the input alphabet." +
+                        "symbols: "+illegalSymbolsList.toString()+" are not in the input alphabet." +
                                 "would you like to add them?",ButtonType.YES,ButtonType.NO);
                 illegalSymbolsAlert.setTitle("Illegal symbols");
                 Optional<ButtonType> illegalSymbolsResult = illegalSymbolsAlert.showAndWait();
@@ -404,18 +454,28 @@ public class MainController {
                         drawPane.getChildren().add(trans);
                         trans.toBack();
                     }
-                    for(char i:illegalSymbolList){
+                    for(char i:illegalSymbolsList){
                         fst.addInputAlpha(i);
                         fst.addTransition(s0.getName(),i,s1.getName());
                         trans.addSymbol(i);
                     }
+                    newlyAddedSymbols.addAll(illegalSymbolsList);
                     //add the newly added symbols to the input alpha label
                     Object[] sorted = fst.getInputAlpha().toArray();
                     Arrays.sort(sorted);
                     inputAlphaLabel.setText(Arrays.toString(sorted));
+
                 }
             }
+            if(fst.getType().equals("mea")){
+                fst.addOutputAlpha(mealyOutputResult.get().charAt(0));
+                for(char i:newlyAddedSymbols){
+                    ((MealyMachine)fst).addTransitionOutput(s0.getName(),i,s1.getName(),mealyOutputResult.get().charAt(0));
+                    ((MealyTransition)trans).addSymbolOutput(i,mealyOutputResult.get().charAt(0));
+                }
 
+            }
+            trans.updateLabel();
         });
 
     }
@@ -454,7 +514,7 @@ public class MainController {
         }
         else if(fst instanceof NFA){
             //if it's already a final state
-            if(fst.getOutputMap().get(s)=='1') {
+            if(fst.getOutputMap().get(s.getName())=='1') {
                 ((NFA)(fst)).deleteFinalState(s.getName());
                 s.setCircleStroke(null);
             }
@@ -531,12 +591,19 @@ public class MainController {
         clearAlert.setTitle("Clear");
         Optional<ButtonType>clearResult =clearAlert.showAndWait();
         if(clearResult.get()==ButtonType.YES){
+
             HashSet<State> copy = new HashSet<>();
             for(State i:stateSet){
                 copy.add(i);
             }
             for(State i:copy){
                 deleteState(i);
+            }
+            if(!(fst instanceof DFA || fst instanceof NFA))
+            fst.getOutputAlpha().removeAll(fst.getOutputAlpha());
+            Set<String> copy2 = fst.getOutputMap().keySet();
+            for(String i:copy2){
+                fst.getOutputMap().remove(i);
             }
         }
     }

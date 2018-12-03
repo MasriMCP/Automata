@@ -24,7 +24,6 @@ public class MooreMachine extends FiniteStateTransducer {
             char temp = input.charAt(i);
             currentState = transitionMap.get(currentState + String.valueOf(temp));
             ret.append(outputMap.get(currentState));
-
         }
         return ret.toString();
     }

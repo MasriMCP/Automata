@@ -15,8 +15,8 @@ import java.util.HashSet;
 public class Transition extends Group {
     private CubicCurve l0 = new CubicCurve();//main line
     private final static int STROKE_WIDTH = 3;
-    private HashSet<Character> symbols = new HashSet<>();
-    private Label symbolsLabel = new Label();
+    protected HashSet<Character> symbols = new HashSet<>();
+    protected Label symbolsLabel = new Label();
     private State s0, s1;
     private ImageView arrowHead;
     private final static int ARROW_HEAD_SIZE=15;
@@ -41,10 +41,10 @@ public class Transition extends Group {
             if (sign != 0)
                 sign = Math.abs(sign) / sign;
             double angle = Math.atan((s1.getCenterY()-s0.getCenterY())/(s1.getCenterX()-s0.getCenterX()));
-            l0.controlX1Property().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle)*sign));
-            l0.controlY1Property().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle)*sign));
-            l0.controlX2Property().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle)*sign));
-            l0.controlY2Property().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle)*sign));
+            l0.controlX1Property().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle+Math.PI/4)*sign));
+            l0.controlY1Property().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle+Math.PI/4)*sign));
+            l0.controlX2Property().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle+Math.PI/4)*sign));
+            l0.controlY2Property().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle+Math.PI/4)*sign));
             l0.setFill(null);
 
             l0.setStrokeWidth(STROKE_WIDTH);
@@ -90,7 +90,6 @@ public class Transition extends Group {
 
     public void addSymbol(char symbol) {
         symbols.add(symbol);
-        symbolsLabel.setText(symbols.toString());
     }
 
     public HashSet<Character> getSymbols() {
