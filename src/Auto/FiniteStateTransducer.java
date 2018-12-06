@@ -222,6 +222,10 @@ public abstract class FiniteStateTransducer implements Serializable {
         return outputAlpha;
     }
 
+    public HashMap<String, String> getTransitionMap() {
+        return transitionMap;
+    }
+
     private void setStates(HashSet<String> states) {
         this.states = states;
     }

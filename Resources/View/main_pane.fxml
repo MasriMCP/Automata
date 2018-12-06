@@ -20,7 +20,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
   <children>
     <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
       <menus>
@@ -93,7 +93,7 @@
                         <Insets bottom="20.0" />
                      </VBox.margin>
                   </ToggleButton>
-                  <ToggleButton mnemonicParsing="false" onAction="#toolFinal" prefHeight="60.0" prefWidth="60.0" text="Final" toggleGroup="$toolbox">
+                  <ToggleButton fx:id="finalToggle" mnemonicParsing="false" onAction="#toolFinal" prefHeight="60.0" prefWidth="60.0" text="Final" toggleGroup="$toolbox">
                      <opaqueInsets>
                         <Insets bottom="20.0" />
                      </opaqueInsets>

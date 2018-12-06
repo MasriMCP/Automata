@@ -64,24 +64,17 @@ public class StartPaneController {
     void loadAuto(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST","fst"));
-        try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(chooser.showOpenDialog(
-                ((Node)(event.getSource())).getScene().getWindow()
-        ))))){
-            String line = in.readLine();
-            JSONParser parser = new JSONParser();
-            JSONObject g = (JSONObject)parser.parse(line);
-            FiniteStateTransducer f;
-            JSONObject fstJson = (JSONObject)parser.parse((String)g.get("fst"));
-            String type = (String)fstJson.get("type");
-            f = type.equals("mea")?new MealyMachine():type.equals("mor")?new MooreMachine():
-                    type.equals("dfa")?new DFA():new NFA();
-            f.setName((String)fstJson.get("name"));
-            //TODO: rest of the load
+        try{
+           String path= chooser.showOpenDialog(
+                    ((Node)(event.getSource())).getScene().getWindow()
+            ).getAbsolutePath();
+
             Stage primaryStage = new Stage();
             ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
             FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
             Parent root = loader.load();
-            ((MainController) loader.getController()).setFST(f);
+            System.out.println(path);
+            ((MainController) loader.getController()).load(path);
             Scene scene = new Scene(root, 800, 600);
             primaryStage.setTitle("Theory of Automata");
             primaryStage.setScene(scene);
@@ -90,8 +83,6 @@ public class StartPaneController {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
