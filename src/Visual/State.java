@@ -8,9 +8,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class State extends StackPane {
+public class State extends StackPane implements Serializable {
     public final static double R = 15;
     private static final double STROKE_WIDTH = 5;
     private Circle circle = new Circle();

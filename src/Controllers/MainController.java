@@ -92,16 +92,22 @@ public class MainController {
             noInitialAlert.showAndWait();
             return;
         }
-        if(fst instanceof DFA){
-            outputLabel.setText(((DFA)(fst)).isAccepted(inputText.getText())?"accepted":"not accepted");
-        }
-        else if(fst instanceof NFA){
-            outputLabel.setText(((NFA)(fst)).isAccepted(inputText.getText())?"accepted":"not accepted");
-        }
-        else {
-            System.out.println(inputText.getText());
-            System.out.println(fst.run(inputText.getText()));
-            outputLabel.setText(fst.run(inputText.getText()));
+        try {
+            if (fst instanceof DFA) {
+                outputLabel.setText(((DFA) (fst)).isAccepted(inputText.getText()) ? "accepted" : "not accepted");
+            } else if (fst instanceof NFA) {
+                outputLabel.setText(((NFA) (fst)).isAccepted(inputText.getText()) ? "accepted" : "not accepted");
+            } else {
+                System.out.println(inputText.getText());
+                System.out.println(fst.run(inputText.getText()));
+                outputLabel.setText(fst.run(inputText.getText()));
+            }
+        }catch (IllegalStateException ex){
+            Alert noInitialAlert = new Alert(Alert.AlertType.WARNING,
+                    "Not a total function");
+            noInitialAlert.setTitle("cannot run");
+            noInitialAlert.showAndWait();
+            return;
         }
     }
 
@@ -338,6 +344,7 @@ public class MainController {
                 for(Transition t:transitionSet){
                     if(t.getS0()==s0&&t.getS1()==s1) trans = t;
                 }
+                if(fst.getType().equals("mea"))
                 mealyOutputResult = mealyOutputDialog.showAndWait();
             }
 
@@ -563,27 +570,19 @@ public class MainController {
         debugLabel.setText(fst.toString());
     }
     @FXML
-    void save(ActionEvent event){
-        HashMap<String,String> vertices = new HashMap<>();
-        for(State s:stateSet){
-            vertices.put(s.getName(),String.valueOf(s.getCenterX())+","+String.valueOf(s.getCenterY()));
-        }
-        JSONObject obj = new JSONObject();
-        obj.put("vertices",vertices);
-        obj.put("fst",fst.toString());
+    void save(ActionEvent event) throws IOException {
+
         FileChooser chooser =new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST",".fst"));
+       ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(chooser
+        .showSaveDialog(drawPane.getScene().getWindow()))));
+       out.writeObject(stateSet);
+       out.writeObject(transitionSet);
+       out.writeObject(fst);
 
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(chooser
-        .showSaveDialog(drawPane.getScene().getWindow()))))){
 
-            out.write(obj.toJSONString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+
     @FXML
     public void clear(ActionEvent e){
         Alert clearAlert = new Alert(Alert.AlertType.WARNING,

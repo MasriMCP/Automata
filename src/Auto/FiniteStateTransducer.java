@@ -2,15 +2,20 @@ package Auto;
 
 import Visual.State;
 import netscape.javascript.JSObject;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.zip.DataFormatException;
 
-public abstract class FiniteStateTransducer {
+public abstract class FiniteStateTransducer implements Serializable {
     protected HashSet<String> states;//Q
     protected HashSet<Character> inputAlpha;//sigma
     protected HashSet<Character> outputAlpha;//gamma
@@ -105,14 +110,17 @@ public abstract class FiniteStateTransducer {
             }
         return this;
     }
-
+    public void save(String path) throws IOException {
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path));
+        out.writeObject(this);
+        out.close();
+    }
     public static FiniteStateTransducer load(String path) throws IOException {
         FiniteStateTransducer ret = null;
-        JSONParser parser = new JSONParser();
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(path));
         try {
-
-            parser.parse(path);
-        } catch (ParseException e) {
+            ret = (FiniteStateTransducer)in.readObject();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return ret;//TODO this
@@ -212,5 +220,25 @@ public abstract class FiniteStateTransducer {
 
     public HashSet<Character> getOutputAlpha() {
         return outputAlpha;
+    }
+
+    private void setStates(HashSet<String> states) {
+        this.states = states;
+    }
+
+    private void setInputAlpha(HashSet<Character> inputAlpha) {
+        this.inputAlpha = inputAlpha;
+    }
+
+    private void setOutputAlpha(HashSet<Character> outputAlpha) {
+        this.outputAlpha = outputAlpha;
+    }
+
+    private void setTransitionMap(HashMap<String, String> transitionMap) {
+        this.transitionMap = transitionMap;
+    }
+
+    private void setOutputMap(HashMap<String, Character> outputMap) {
+        this.outputMap = outputMap;
     }
 }
