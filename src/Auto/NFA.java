@@ -3,7 +3,7 @@ package Auto;
 import java.util.HashSet;
 
 public class NFA extends MooreMachine {
-    public static final char LAMBDA = 0;
+    public static final char LAMBDA = 0x03BB;
 
     public NFA() {
         super();
@@ -41,28 +41,34 @@ public class NFA extends MooreMachine {
     }
 
     public boolean isAccepted(String input) {
-        return run(input, initialState);
+        return run(input, initialState,new HashSet<String>());
     }
 
-    private boolean run(String input, String state) {
+    private boolean run(String input, String state,HashSet<String> searched) {
+        boolean ret = false;//the return value
+        for(String s:getLambdaClosure(state)){
+            if(!searched.contains(s)){
+                searched.add(s);
+                ret = ret || run(input, s, searched);
+            }
 
+
+        }
         if (input.length() == 0) {
             //if the input length == 0 then there are no more possible transitions and we need to check
             //if this is a final state.
-            return outputMap.get(state) == '1';
+            return outputMap.get(state) == '1'||ret;
         }
-        boolean ret = false;//the return value
-        if (transitionMap.get(state + input.charAt(0)) == null) return false;
+
+        if (transitionMap.get(state + input.charAt(0)) == null) return ret;
         String[] states = transitionMap.get(state + input.charAt(0)).split(",");
         for (String s : states) {
             //for each state
             //if any of the branches can reach a final state ret will be true;
-            ret = ret || run(input.substring(1, input.length()), s);
+            HashSet<String> recSearched = new HashSet<String>();
+            ret = ret || run(input.substring(1, input.length()), s,recSearched);
         }
-        /*for(String s:getLambdaClosure(state)){
-            ret = ret || run(input,s);
 
-        }*/
         return ret;
     }
 

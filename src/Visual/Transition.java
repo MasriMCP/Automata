@@ -21,7 +21,7 @@ public class Transition extends Group implements Serializable {
     protected Label symbolsLabel = new Label();
     private State s0, s1;
     private ImageView arrowHead;
-    private Circle controlPoint;
+    private Circle controlPoint;//(not) used to control the curve's control points
     private final static int ARROW_HEAD_SIZE=15;
     public Transition(State s0, State s1) {
         try {
@@ -76,10 +76,14 @@ public class Transition extends Group implements Serializable {
             controlPoint.setOnMouseClicked(e->{
                 controlPoint.layoutXProperty().unbind();
                 controlPoint.layoutYProperty().unbind();
+                l0.controlX1Property().bind(controlPoint.layoutXProperty());
+                l0.controlY1Property().bind(controlPoint.layoutYProperty());
+                l0.controlX2Property().bind(controlPoint.layoutXProperty());
+                l0.controlY2Property().bind(controlPoint.layoutYProperty());
             });
             controlPoint.setOnMouseDragged(e->{
-                controlPoint.setCenterX(e.getSceneX());
-                controlPoint.setCenterY(e.getSceneY());
+                controlPoint.setCenterX(e.getX());
+                controlPoint.setCenterY(e.getY());
             });
             controlPoint.setOnMouseDragReleased(e->{
                 int sign2 = s0.getName().compareTo(s1.getName());

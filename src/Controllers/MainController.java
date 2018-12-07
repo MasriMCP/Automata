@@ -185,6 +185,9 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(name -> {
+            if(name.equals("")){
+                name = "Φname"+new java.util.Date().getTime();
+            }
             State s=null;
             //check for naming redundancy
             for(State i:stateSet){
@@ -222,8 +225,10 @@ public class MainController {
                 drawPane.getChildren().add(s);
                 stateSet.add(s);
                 s.setName(name);
+                s.setCircleFill(COLOR_NOT_SELECTED);
                 s.setLableFill(COLOR_TEXT_SELECTED);
                 initState(s);
+
         });
         dialog.setResult("");
     }
@@ -242,28 +247,51 @@ public class MainController {
             mealyOutputDialog.setContentText("add an output character");
             mealyOutputDialog.setHeaderText("add output");
             Optional<String> mealyOutputResult = null;
-            //compile a list of legal symbols and another list of illegal symbols
-            LinkedList<Character> illegalSymbolsList = new LinkedList<>(),legalSymbolsList = new LinkedList<>();
+            //compile a list of legal symbols,a list of illegal symbols and a list of symbols that are already used by s0
+            LinkedList<Character> illegalSymbolsList = new LinkedList<>(),legalSymbolsList = new LinkedList<>()
+                    ,addedSymbolsList = new LinkedList<>();
             //if it's in the form letter..letter or number..number
             if(symbolsString.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")){
                 char symbol0 = symbolsString.charAt(0),symbol1 = symbolsString.charAt(3);
                 if(symbol1>symbol0)
                     for (char i = symbol0; i <= symbol1; i++) {
-                        if(fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
-                        else illegalSymbolsList.add(i);
+                        if(fst.getTransitionMap().containsKey(s0.getName()+String.valueOf(i))&&!(fst instanceof NFA))
+                            addedSymbolsList.add(i);
+                        else {
+                            if (fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
+                            else illegalSymbolsList.add(i);
+                        }
+
 
                     }
                 else
                     for (char i = symbol1; i <= symbol0; i++) {
-                        if(fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
-                        else illegalSymbolsList.add(i);
+                        if(fst.getTransitionMap().containsKey(s0.getName()+String.valueOf(i))&&!(fst instanceof NFA))
+                            addedSymbolsList.add(i);
+                        else {
+                            if (fst.getInputAlpha().contains(i)) legalSymbolsList.add(i);
+                            else illegalSymbolsList.add(i);
+                        }
                     }
             }
             else{
                 String[] temp = symbolsString.split("\\s+|,");//one or more spaces or a comma
                 for(int i=0;i<temp.length;i++){
-                    if(fst.getInputAlpha().contains(temp[i].charAt(0))) legalSymbolsList.add(temp[i].charAt(0));
-                    else illegalSymbolsList.add(temp[i].charAt(0));
+
+                    char addedSymbol =0;
+                    if((temp[i].toUpperCase().equals("LAMBDA")||temp[i].equals(""))&&fst instanceof NFA){
+                        addedSymbol = NFA.LAMBDA;
+                    }
+                    else{
+                        addedSymbol = temp[i].charAt(0);
+                    }
+                    if(fst.getTransitionMap().containsKey(s0.getName()+String.valueOf(addedSymbol))&&!(fst instanceof NFA))
+                        addedSymbolsList.add(addedSymbol);
+                    else {
+                        if (fst.getInputAlpha().contains(addedSymbol)) legalSymbolsList.add(addedSymbol);
+                        else illegalSymbolsList.add(addedSymbol);
+                    }
+
                 }
             }
             //reference to the transition object
@@ -338,6 +366,14 @@ public class MainController {
                             }
                             else {
                                 String[] deleteTemp =deleteString.split("\\s+|,");//one or more spaces or a comma
+                                if(deleteTemp.length==0){
+                                    if (fst.getInputAlpha().contains(NFA.LAMBDA)){
+                                        fst.deleteTransition(deletedTransition.getS0().getName(), NFA.LAMBDA, deletedTransition.getS1().getName());
+                                        deletedTransition.getSymbols().remove( NFA.LAMBDA);
+
+                                    }
+                                }
+                                else
                                 for (int i = 0; i < deleteTemp.length; i++) {
                                     if (fst.getInputAlpha().contains(deleteTemp[i].charAt(0))){
                                         fst.deleteTransition(deletedTransition.getS0().getName(), deleteTemp[i].charAt(0), deletedTransition.getS1().getName());
@@ -401,6 +437,32 @@ public class MainController {
                     Arrays.sort(sorted);
                     inputAlphaLabel.setText(Arrays.toString(sorted));
 
+                }
+            }
+            if(addedSymbolsList.size()>0){
+                Alert addedSymbolsAlert = new Alert(Alert.AlertType.WARNING,
+                        "symbols: "+addedSymbolsList.toString()+" are already connected to other states." +
+                                "would you like to delete those transitions and add new transitions?",ButtonType.YES,ButtonType.NO);
+                addedSymbolsAlert.setTitle("added symbols");
+                Optional<ButtonType> addedSymbolsResult = addedSymbolsAlert.showAndWait();
+                if(addedSymbolsResult.get()==ButtonType.YES){
+                    for(char i:addedSymbolsList){
+                        Transition deletedTransition = null;
+                        for(Transition t:transitionSet){
+                            if(t.getS0()==s0&&t.getSymbols().contains(i)){
+                                deletedTransition = t;break;
+                            }
+                        }
+                        deletedTransition.getSymbols().remove(i);
+                        fst.deleteTransition(s0.getName(),i,s1.getName());
+                        if(deletedTransition.getSymbols().size()<=0){
+                            transitionSet.remove(deletedTransition);
+                            drawPane.getChildren().remove(deletedTransition);
+                        }
+                        fst.addTransition(s0.getName(),i,s1.getName());
+                        addTransition(s0,s1,i);
+                        deletedTransition.updateLabel();
+                    }
                 }
             }
             if(fst.getType().equals("mea")){
@@ -546,13 +608,13 @@ public class MainController {
 
 
             for(String i:loadStateMap.keySet()){
-                State s  = fst instanceof MooreMachine?addMooreState(loadStateMap.get(i).x,loadStateMap.get(i).y,i,fst.getOutputMap().get(i)):
+                State s  = (fst instanceof MooreMachine)&&!(fst instanceof DFA || fst instanceof NFA)?
+                        addMooreState(loadStateMap.get(i).x,loadStateMap.get(i).y,i,fst.getOutputMap().get(i)):
                         addState(loadStateMap.get(i).x,loadStateMap.get(i).y,i);
                 if(i.equals(fst.getInitialState())){
                     setInitial(s);
                 }
                 if((fst instanceof DFA || fst instanceof NFA)&&fst.getOutputMap().get(i)=='1'){
-                    System.out.println(s.getName());
                     s.setCircleStroke(COLOR_FINAL_STROKE);
                 }
                 initState(s);
@@ -614,6 +676,7 @@ public class MainController {
             trans = new Transition(s0, s1);
         }
         transitionSet.add(trans);
+        if(!drawPane.getChildren().contains(trans))
         drawPane.getChildren().add(trans);
         trans.addSymbol(symbol);
         trans.updateLabel();
@@ -726,6 +789,7 @@ public class MainController {
         stateSet.add(s);
         s.setLableFill(COLOR_TEXT_SELECTED);
         initState(s);
+        s.setCircleFill(COLOR_NOT_SELECTED);
         drawPane.getChildren().add(s);
         return s;
     }
@@ -735,6 +799,7 @@ public class MainController {
         stateSet.add(s);
         s.setLableFill(COLOR_TEXT_SELECTED);
         initState(s);
+        s.setCircleFill(COLOR_NOT_SELECTED);
         drawPane.getChildren().add(s);
         return s;
     }
@@ -791,8 +856,9 @@ public class MainController {
                         connectTo = i;
                     }
                 }
-                if(connectTo!=null)
-                    addTransition(temp,connectTo);
+                if(connectTo!=null) {
+                    addTransition(temp, connectTo);
+                }
             }
         });
         s.setOnMouseEntered((e)->{

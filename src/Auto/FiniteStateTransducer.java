@@ -245,4 +245,5 @@ public abstract class FiniteStateTransducer implements Serializable {
     private void setOutputMap(HashMap<String, Character> outputMap) {
         this.outputMap = outputMap;
     }
+
 }

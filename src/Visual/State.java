@@ -16,7 +16,7 @@ public class State extends StackPane implements Serializable {
     private static final double STROKE_WIDTH = 5;
     private Circle circle = new Circle();
     protected Label nameLabel = new Label();
-
+    private String name;
     public State(double x, double y) {
         setCenterX(x);
         setCenterY(y);
@@ -26,12 +26,14 @@ public class State extends StackPane implements Serializable {
     }
 
     public String getName() {
-        return nameLabel.getText();
+        return name;
 
     }
 
     public void setName(String name) {
-        nameLabel.setText(name);
+        this.name = name;
+        nameLabel.setText(name.matches("Φname(\\d)+")?"":
+        name);
     }
 
     public void setCircleFill(Paint paint) {
