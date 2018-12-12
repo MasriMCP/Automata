@@ -8,9 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.simple.JSONArray;
@@ -20,6 +18,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Properties;
 
 public class StartPaneController {
 
@@ -48,43 +47,29 @@ public class StartPaneController {
         if (f != null) {
             f.setName(name.getText());
             f.addDescription(desc.getText());
-            Stage primaryStage = new Stage();
             ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-            FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
-            Parent root = loader.load();
-            ((MainController) loader.getController()).setFST(f);
-            Scene scene = new Scene(root, 800, 600);
-            primaryStage.setTitle("Theory of Automata");
-            primaryStage.setScene(scene);
-            primaryStage.show();
+            WindowLoader.loadMainWindowEmpty(f);
         }
     }
 
     @FXML
     void loadAuto(ActionEvent event) {
-        FileChooser chooser = new FileChooser();
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST","fst"));
+
+
         try{
-           String path= chooser.showOpenDialog(
-                    ((Node)(event.getSource())).getScene().getWindow()
-            ).getAbsolutePath();
-
-            Stage primaryStage = new Stage();
+            String path = WindowLoader.showFileChooserDialog((Stage)((Node)(event.getSource())).getScene().getWindow());
+            WindowLoader.loadMainWindowWithPath(path);
             ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-            FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
-            Parent root = loader.load();
-            System.out.println(path);
-            ((MainController) loader.getController()).load(path);
-            Scene scene = new Scene(root, 800, 600);
-            primaryStage.setTitle("Theory of Automata");
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+        catch (IOException e) {
+            //do nothing
+        }
+
+        catch (NullPointerException e){
+            //do nothing
+        }
+
     }
 }
 

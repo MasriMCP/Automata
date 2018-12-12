@@ -32,7 +32,7 @@ public class State extends StackPane implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-        nameLabel.setText(name.matches("Φname(\\d)+")?"":
+        nameLabel.setText(!name.matches("[A-Za-z0-9\\-]{0,8}")?"":
         name);
     }
 

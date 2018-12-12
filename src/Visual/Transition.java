@@ -1,14 +1,15 @@
 package Visual;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.*;
+
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -20,22 +21,17 @@ public class Transition extends Group implements Serializable {
     protected HashSet<Character> symbols = new HashSet<>();
     protected Label symbolsLabel = new Label();
     private State s0, s1;
-    private ImageView arrowHead;
     private Circle controlPoint;//(not) used to control the curve's control points
-    private final static int ARROW_HEAD_SIZE=15;
+    private Path arrowEnd=new Path();
     public Transition(State s0, State s1) {
-        try {
             controlPoint = new Circle();
             controlPoint.setFill(Color.BLACK);
             controlPoint.setRadius(5);
-             arrowHead = new ImageView(new Image(new FileInputStream("Resources/images/arrowhead.png")));
-            getChildren().addAll(l0,symbolsLabel/*,controlPoint*/);
-            arrowHead.setFitWidth(ARROW_HEAD_SIZE);
-            arrowHead.setFitHeight(ARROW_HEAD_SIZE);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+            getChildren().addAll(l0,symbolsLabel,controlPoint,arrowEnd);
+        controlPoint.setFill(Color.rgb(0,0,0,0));
         l0.setStroke(Color.ORANGE);
+        arrowEnd.setStroke(Color.ORANGE);
+        arrowEnd.setStrokeWidth(STROKE_WIDTH);
         if(!(s0==null&&s1==null)) {
             this.s0 = s0;
             this.s1 = s1;
@@ -56,43 +52,32 @@ public class Transition extends Group implements Serializable {
             else{
                 sign = Math.abs(sign) / sign;
                 double angle = Math.atan((s1.getCenterY()-s0.getCenterY())/(s1.getCenterX()-s0.getCenterX()));
-                controlPoint.layoutXProperty().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle+Math.PI/4)*sign));
-                controlPoint.layoutYProperty().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle+Math.PI/4)*sign));
-                l0.controlX1Property().bind(controlPoint.layoutXProperty());
-                l0.controlY1Property().bind(controlPoint.layoutYProperty());
-                l0.controlX2Property().bind(controlPoint.layoutXProperty());
-                l0.controlY2Property().bind(controlPoint.layoutYProperty());
+                controlPoint.centerXProperty().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle+Math.PI/4)*sign));
+                controlPoint.centerYProperty().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle+Math.PI/4)*sign));
+                l0.controlX1Property().bind(controlPoint.centerXProperty());
+                l0.controlY1Property().bind(controlPoint.centerYProperty());
+                l0.controlX2Property().bind(controlPoint.centerXProperty());
+                l0.controlY2Property().bind(controlPoint.centerYProperty());
                 symbolsLabel.layoutXProperty().bind(l0.controlX1Property().subtract(symbolsLabel.widthProperty().divide(2)));
                 symbolsLabel.layoutYProperty().bind(l0.controlY1Property());
             }
             l0.setFill(null);
-
             l0.setStrokeWidth(STROKE_WIDTH);
-
-            arrowHead.xProperty().bind(l0.endXProperty());
-            arrowHead.yProperty().bind(l0.endYProperty());
-            arrowHead.rotateProperty().bind(l0.rotateProperty());
             symbolsLabel.setText(symbols.toString());
-            controlPoint.setOnMouseClicked(e->{
-                controlPoint.layoutXProperty().unbind();
-                controlPoint.layoutYProperty().unbind();
-                l0.controlX1Property().bind(controlPoint.layoutXProperty());
-                l0.controlY1Property().bind(controlPoint.layoutYProperty());
-                l0.controlX2Property().bind(controlPoint.layoutXProperty());
-                l0.controlY2Property().bind(controlPoint.layoutYProperty());
-            });
             controlPoint.setOnMouseDragged(e->{
+                controlPoint.centerXProperty().unbind();
+                controlPoint.centerYProperty().unbind();
                 controlPoint.setCenterX(e.getX());
                 controlPoint.setCenterY(e.getY());
-            });
-            controlPoint.setOnMouseDragReleased(e->{
-                int sign2 = s0.getName().compareTo(s1.getName());
-                sign2 = Math.abs(sign2) / sign2;
-                double angle = Math.atan((s1.getCenterY()-s0.getCenterY())/(s1.getCenterX()-s0.getCenterX()));
-                controlPoint.layoutXProperty().bind(l0.startXProperty().add(l0.endXProperty()).divide(2).add(50*Math.cos(angle+Math.PI/4)*sign2));
-                controlPoint.layoutYProperty().bind(l0.startYProperty().add(l0.endYProperty()).divide(2).add(50*Math.sin(angle+Math.PI/4)*sign2));
+                update();
             });
 
+            controlPoint.setOnMouseEntered(e->{
+                controlPoint.setFill(Color.rgb(0,0,0,1));
+            });
+            controlPoint.setOnMouseExited(e->{
+                controlPoint.setFill(Color.rgb(0,0,0,0));
+            });
 
 
         }
@@ -110,8 +95,6 @@ public class Transition extends Group implements Serializable {
     public void setEnd(double x, double y) {
         l0.setEndX(x);
         l0.setEndY(y);
-        arrowHead.setX(x-ARROW_HEAD_SIZE/2);
-        arrowHead.setY(y-ARROW_HEAD_SIZE/2);
         l0.setControlX1((l0.getStartX()+l0.getEndX())/2);
         l0.setControlY1((l0.getStartY()+l0.getEndY())/2);
         l0.setControlX2((l0.getStartX()+l0.getEndX())/2);
@@ -120,6 +103,7 @@ public class Transition extends Group implements Serializable {
 
     public void setFill(Paint p) {
         l0.setStroke(p);
+        arrowEnd.setStroke(p);
     }
 
     public void addSymbolRange(char symbol0, char symbol1) {
@@ -130,6 +114,9 @@ public class Transition extends Group implements Serializable {
 
     public void addSymbol(char symbol) {
         symbols.add(symbol);
+    }
+    public void removeSymbol(char symbol){
+        symbols.remove(symbol);
     }
 
     public HashSet<Character> getSymbols() {
@@ -159,5 +146,52 @@ public class Transition extends Group implements Serializable {
     public void updateLabel(){
         symbolsLabel.setText(symbols.toString());
     }
+    public void setControlPoint(double x,double y){
+        controlPoint.centerXProperty().unbind();
+        controlPoint.centerYProperty().unbind();
+        controlPoint.setCenterX(x);
+        controlPoint.setCenterY(y);
+        update();
 
+    }
+    public Point getControlPoint(){
+        return new Point((int)controlPoint.getCenterX(),(int)controlPoint.getCenterY());
+    }
+    public void update(){
+        arrowEnd.getElements().removeAll(arrowEnd.getElements());
+        double size=Math.max(l0.getBoundsInLocal().getWidth(),
+                l0.getBoundsInLocal().getHeight());
+        double scale=50;
+        Point2D ori=eval(l0,.9f);
+        Point2D tan=evalDt(l0,9f).normalize().multiply(scale);
+        arrowEnd.getElements().add(new MoveTo(ori.getX()-0.2*tan.getX()-0.2*tan.getY(),
+                ori.getY()-0.2*tan.getY()+0.2*tan.getX()));
+        arrowEnd.getElements().add(new LineTo(ori.getX(), ori.getY()));
+        arrowEnd.getElements().add(new LineTo(ori.getX()-0.2*tan.getX()+0.2*tan.getY(),
+                ori.getY()-0.2*tan.getY()-0.2*tan.getX()));
+
+    }
+    //stolen from stackoverflow
+    private Point2D eval(CubicCurve c, float t){
+        Point2D p=new Point2D(Math.pow(1-t,3)*c.getStartX()+
+                3*t*Math.pow(1-t,2)*c.getControlX1()+
+                3*(1-t)*t*t*c.getControlX2()+
+                Math.pow(t, 3)*c.getEndX(),
+                Math.pow(1-t,3)*c.getStartY()+
+                        3*t*Math.pow(1-t, 2)*c.getControlY1()+
+                        3*(1-t)*t*t*c.getControlY2()+
+                        Math.pow(t, 3)*c.getEndY());
+        return p;
+    }
+    private Point2D evalDt(CubicCurve c, float t){
+        Point2D p=new Point2D(-3*Math.pow(1-t,2)*c.getStartX()+
+                3*(Math.pow(1-t, 2)-2*t*(1-t))*c.getControlX1()+
+                3*((1-t)*2*t-t*t)*c.getControlX2()+
+                3*Math.pow(t, 2)*c.getEndX(),
+                -3*Math.pow(1-t,2)*c.getStartY()+
+                        3*(Math.pow(1-t, 2)-2*t*(1-t))*c.getControlY1()+
+                        3*((1-t)*2*t-t*t)*c.getControlY2()+
+                        3*Math.pow(t, 2)*c.getEndY());
+        return p;
+    }
 }

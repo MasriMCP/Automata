@@ -1,7 +1,5 @@
 package Visual;
-
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class MealyTransition extends Transition{
     private HashMap<Character,Character> symbolsMap = new HashMap<>();
@@ -15,5 +13,8 @@ public class MealyTransition extends Transition{
     public HashMap<Character,Character> getMap(){return symbolsMap;}
     public void updateLabel(){
         symbolsLabel.setText(symbolsMap.toString());
+    }
+    public void removeSymbol(char symbol){
+        symbolsMap.remove(symbol);
     }
 }

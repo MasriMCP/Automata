@@ -1,3 +1,6 @@
+package Controllers;
+
+import Controllers.WindowLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,13 +26,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        FXMLLoader loader = new FXMLLoader(new File("Resources\\View\\start_pane.fxml").toURL());
-        Parent root = loader.load();
-        Scene scene = new Scene(root, 600, 450);
-        primaryStage.setTitle("Theory of Automata");
-        primaryStage.getIcons().add(new Image(new FileInputStream(new File("Resources/images/logo.png"))));
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        WindowLoader.loadStartWindow();
 
 
     }

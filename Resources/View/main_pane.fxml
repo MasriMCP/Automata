@@ -26,15 +26,15 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open…" />
+            <MenuItem mnemonicParsing="false" onAction="#newFile" text="New (ctrl+n)" />
+            <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open… (ctrl+o)" />
             <Menu mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" onAction="#saveDialog" text="Save (ctrl+s)" />
+            <MenuItem mnemonicParsing="false" onAction="#saveAsDialog" text="Save As… (ctrl+shift+s)" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Edit">
