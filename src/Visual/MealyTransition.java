@@ -12,7 +12,9 @@ public class MealyTransition extends Transition{
     }
     public HashMap<Character,Character> getMap(){return symbolsMap;}
     public void updateLabel(){
-        symbolsLabel.setText(symbolsMap.toString());
+        String out = symbolsMap.toString();
+        out = out.replace('=',':');
+        symbolsLabel.setText(out);
     }
     public void removeSymbol(char symbol){
         symbolsMap.remove(symbol);

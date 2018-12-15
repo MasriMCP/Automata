@@ -377,10 +377,11 @@ public class MainController {
                 for (Transition t : transitionSet) {
                     if (t.getS0() == s0 && t.getS1() == s1) trans = t;
                 }
-                if (fst.getType().equals("mea"))
+                if (fst.getType().equals("mea")) {
                     mealyOutputResult = mealyOutputDialog.showAndWait();
-                if (!mealyOutputResult.isPresent()||"".equals(mealyOutputResult.get())) {
-                    return;
+                    if (!mealyOutputResult.isPresent() || "".equals(mealyOutputResult.get())) {
+                        return;
+                    }
                 }
             }
 
@@ -736,9 +737,9 @@ public class MainController {
             }
         }
     }
-
     public void load(String path) throws IOException {
         openPath = path;
+
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
             Map<String, Point> loadStateMap = (HashMap<String, Point>) in.readObject();
             Map<String, Point> loadControlPointMap = (HashMap<String, Point>) in.readObject();
@@ -804,6 +805,7 @@ public class MainController {
             }
 
 
+
         }
         catch (StreamCorruptedException e){
             new Alert(Alert.AlertType.ERROR,"File corrupt or incompatible",ButtonType.OK).showAndWait();
@@ -815,6 +817,8 @@ public class MainController {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+
 
     }
 
