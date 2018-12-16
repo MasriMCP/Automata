@@ -28,6 +28,7 @@ import sun.security.krb5.internal.Krb5;
 import java.awt.*;
 import java.awt.Button;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MainController {
@@ -113,6 +114,13 @@ public class MainController {
             noInitialAlert.showAndWait();
             return;
         }
+        catch (IllegalArgumentException ex){
+            Alert IllegalSymbolAlert = new Alert(Alert.AlertType.WARNING,
+                    "input contains a symbol not in the input alphabet: "+ex.getMessage().charAt(ex.getMessage().length()-1));
+            IllegalSymbolAlert.setTitle("illegal symbol");
+            IllegalSymbolAlert.showAndWait();
+            return;
+        }
     }
 
     @FXML
@@ -160,13 +168,9 @@ public class MainController {
         typeLabel.setText("Type:" + fst.getClass().getSimpleName());
         nameLabel.setText("Name: " + fst.getName());
         descLabel.setText("Description: " + fst.describe());
-        try {
-            initStateArrow = new ImageView(new Image(new FileInputStream("Resources/images/arrow.png")));
-            initStateArrow.setFitHeight(20);
-            initStateArrow.setFitWidth(20);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        initStateArrow = new ImageView(new Image(Main.class.getClassLoader().getResourceAsStream("images/arrow.png")));
+        initStateArrow.setFitHeight(20);
+        initStateArrow.setFitWidth(20);
         connectingTransition = new Transition(null, null);
         connectingTransition.setStart(-100, -100);
         connectingTransition.setEnd(-100, -100);
@@ -262,7 +266,7 @@ public class MainController {
                 outputDialog.setHeaderText("Enter state output:");
                 outputDialog.setContentText("output:");
                 Optional<String> outputResult = outputDialog.showAndWait();
-                if (outputResult.isPresent()) {
+                if (outputResult.isPresent()&&outputResult.get().length()>0) {
                     fst.addOutputAlpha(outputResult.get().charAt(0));
                     s = new MooreState(x, y, outputResult.get().charAt(0));
                     ((MooreMachine) fst).addStateOutput(name, outputResult.get().charAt(0));
@@ -398,7 +402,6 @@ public class MainController {
                 } else {
                     trans = new Transition(s0, s1);
                 }
-
                 trans.setOnMouseClicked(e -> {
                     if (mode == SELECT) {
                         if (selected != null) {
@@ -467,9 +470,18 @@ public class MainController {
 
                                     }
                             }
+                            if(fst instanceof MealyMachine) {
+                                System.out.println(((MealyTransition) deletedTransition).getMap());
+                                if (((MealyTransition) deletedTransition).getMap().size() == 0) {
+                                    drawPane.getChildren().remove(deletedTransition);
+                                }
+                            }
+                            else
                             if (deletedTransition.getSymbols().size() == 0) {
+                                System.out.println("Xxxxxxx");
                                 drawPane.getChildren().remove(deletedTransition);
                             }
+
                             //add the newly added symbols to the input alpha label
                             Object[] sorted = fst.getInputAlpha().toArray();
                             Arrays.sort(sorted);
@@ -581,6 +593,12 @@ public class MainController {
         stateSet.remove(state);
         drawPane.getChildren().removeAll(temp);
         drawPane.getChildren().remove(state);
+        if(state.getName().equals(fst.getInitialState())){
+            initStateArrow.xProperty().unbind();
+            initStateArrow.yProperty().unbind();
+            initStateArrow.setX(-100);
+            initStateArrow.setY(-100);
+        }
         fst.delete(state.getName());
     }
 
@@ -618,8 +636,8 @@ public class MainController {
 
     @FXML
     public void inputAlphaAdd(ActionEvent event) {
-
         String str = inputAlphaText.getText();
+        if(str.length()==0) return;
         if (str.matches("[A-Za-z]..[A-Za-z]|\\d..\\d")) {
             fst.addInputAlphaRange(str.charAt(0), str.charAt(3));
         } else {
@@ -662,7 +680,7 @@ public class MainController {
     void saveDialog(Event event) {
         if (openPath == null) {
             FileChooser chooser = new FileChooser();
-            chooser.setInitialDirectory(new File("C:\\Users\\jit\\Desktop\\examples"));
+            chooser.setInitialDirectory(new File((System.getProperty("user.home") + "/Desktop")));
             chooser.setInitialFileName(fst.getName()+".fst");
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST", ".fst"));
             try {
@@ -683,17 +701,26 @@ public class MainController {
     @FXML
     void saveAsDialog(Event event) {
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File("C:\\Users\\jit\\Desktop\\examples"));
-        chooser.setInitialFileName(fst.getName());
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST", ".fst"));
+        Properties prop = new Properties();
+
         try {
+            prop.loadFromXML(Main.class.getClassLoader().getResourceAsStream("config/config.xml"));
+            chooser.setInitialDirectory(new File((String) prop.getOrDefault("lod",System.getProperty("user.home"))));
+            chooser.setInitialFileName(fst.getName());
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST", ".fst"));
             openPath = chooser.showSaveDialog(drawPane.getScene().getWindow()).getAbsolutePath();
         }
         catch (NullPointerException ex){
             return;
+        } catch (InvalidPropertiesFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         try {
             save(openPath);
+            prop.setProperty("lod",Paths.get(openPath).getParent().toString());
+            prop.storeToXML(new FileOutputStream("C:/Users/PDX/Desktop/AutomataProject/resources/config/config.xml"),null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -735,6 +762,10 @@ public class MainController {
             for (String i : copy2) {
                 fst.getOutputMap().remove(i);
             }
+            initStateArrow.xProperty().unbind();
+            initStateArrow.yProperty().unbind();
+            initStateArrow.setX(-100);
+            initStateArrow.setY(-100);
         }
     }
     public void load(String path) throws IOException {
@@ -923,7 +954,15 @@ public class MainController {
 
                         }
                     }
+                    if(fst instanceof MealyMachine) {
+                        System.out.println(((MealyTransition) deletedTransition).getMap());
+                        if (((MealyTransition) deletedTransition).getMap().size() == 0) {
+                            drawPane.getChildren().remove(deletedTransition);
+                        }
+                    }
+                    else
                     if (deletedTransition.getSymbols().size() == 0) {
+                        System.out.println("Xxxxxxx");
                         drawPane.getChildren().remove(deletedTransition);
                     }
                     //add the newly added symbols to the input alpha label
@@ -1065,12 +1104,13 @@ public class MainController {
     }
 
     public void quit(Event event){
-        saveChangesDialog();
+        if(!saveChangesDialog())event.consume();
+
     }
     boolean saveChangesDialog(){
         //returns false if no value is the user canceled
         Alert onQuitAlert = new Alert(Alert.AlertType.CONFIRMATION,"Save changes?",
-                ButtonType.YES,ButtonType.NO);
+                ButtonType.YES,ButtonType.NO,ButtonType.CANCEL);
         onQuitAlert.setTitle("save changes");
         Optional<ButtonType> res = onQuitAlert.showAndWait();
         if(res.isPresent()) {
@@ -1084,12 +1124,14 @@ public class MainController {
                 } else {
                     saveAsDialog(null);
                 }
-                return true;
-            } else if (res.get() == ButtonType.NO) {
+
+            } else if(res.get()==ButtonType.NO){
                 return true;
             }
+            else if(res.get()==ButtonType.CANCEL){
+                return false;
+            }
         }
-
             return false;
     }
 }

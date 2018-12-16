@@ -22,6 +22,7 @@ public class MealyMachine extends FiniteStateTransducer {
         StringBuilder ret = new StringBuilder("");
         for (int i = 0; i < input.length(); i++) {
             char temp = input.charAt(i);
+            if(!inputAlpha.contains(temp)) throw new IllegalArgumentException("illegal symbol: "+String.valueOf(temp));
             ret.append(outputMap.get(currentState + String.valueOf(temp)));
             currentState = transitionMap.get(currentState + String.valueOf(temp));
         }

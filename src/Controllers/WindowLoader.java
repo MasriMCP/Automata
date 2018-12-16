@@ -2,18 +2,15 @@ package Controllers;
 
 import Auto.FiniteStateTransducer;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StreamCorruptedException;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -28,8 +25,9 @@ public class WindowLoader {
             mainStage.close();
         }
         mainStage = new Stage();
-        FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
+        FXMLLoader loader = new FXMLLoader(Main.class.getClassLoader().getResource("View/main_pane.fxml"));
         Parent root = loader.load();
+        mainStage.getIcons().add(new Image(Main.class.getClassLoader().getResourceAsStream("images/logo.png")));
 
         Scene scene = new Scene(root, 800, 600);
         mainStage.setTitle("Theory of Automata");
@@ -43,8 +41,9 @@ public class WindowLoader {
             mainStage.close();
         }
         mainStage = new Stage();
-        FXMLLoader loader = new FXMLLoader(new File("Resources/View/main_pane.fxml").toURL());
+        FXMLLoader loader = new FXMLLoader(Main.class.getClassLoader().getResource("View/main_pane.fxml"));
         Parent root = loader.load();
+        mainStage.getIcons().add(new Image(Main.class.getClassLoader().getResourceAsStream("images/logo.png")));
 
         Scene scene = new Scene(root, 800, 600);
         mainStage.setTitle("Theory of Automata");
@@ -62,22 +61,33 @@ public class WindowLoader {
             startStage.close();
         }
         startStage = new Stage();
-        FXMLLoader loader = new FXMLLoader(new File("Resources\\View\\start_pane.fxml").toURL());
+        FXMLLoader loader = new FXMLLoader(Main.class.getClassLoader().getResource("View/start_pane.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 600, 450);
         startStage.setTitle("Theory of Automata");
-        startStage.getIcons().add(new Image(new FileInputStream(new File("Resources/images/logo.png"))));
+        startStage.getIcons().add(new Image(Main.class.getClassLoader().getResourceAsStream("images/logo.png")));
         startStage.setScene(scene);
         startStage.show();
     }
     public static String showFileChooserDialog(Stage stage) throws IOException {
         Properties prop = new Properties();
-            prop.load(Main.class.getClassLoader().getResourceAsStream("config/config.xml"));
+        prop.loadFromXML(Main.class.getClassLoader().getResourceAsStream("config/config.xml"));
+
         FileChooser chooser = new FileChooser();
-        String directory = prop.getProperty("last_open_directory");
-        chooser.setInitialDirectory(new File("C:\\Users\\jit\\Desktop\\examples"));
+        String directory = (String)prop.getOrDefault("lod",System.getProperty("user.home"));
+        chooser.setInitialDirectory(new File(directory));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST","*.fst"));
-        return chooser.showOpenDialog(stage).getAbsolutePath();
+        String path = chooser.showOpenDialog(stage).getAbsolutePath();
+        prop.setProperty("lod", Paths.get(path).getParent().toString());
+        System.out.println(prop.getProperty("lod"));
+        new Thread(()->{
+            try {
+                prop.storeToXML(new FileOutputStream("C:/Users/PDX/Desktop/AutomataProject/resources/config/config.xml"),null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        return path;
 
     }
 }
