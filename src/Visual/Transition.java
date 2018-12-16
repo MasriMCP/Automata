@@ -61,6 +61,7 @@ public class Transition extends Group implements Serializable {
                 symbolsLabel.layoutXProperty().bind(l0.controlX1Property().subtract(symbolsLabel.widthProperty().divide(2)));
                 symbolsLabel.layoutYProperty().bind(l0.controlY1Property());
             }
+            update();
             l0.setFill(null);
             l0.setStrokeWidth(STROKE_WIDTH);
             symbolsLabel.setText(symbols.toString());
@@ -162,8 +163,8 @@ public class Transition extends Group implements Serializable {
         double size=Math.max(l0.getBoundsInLocal().getWidth(),
                 l0.getBoundsInLocal().getHeight());
         double scale=50;
-        Point2D ori=eval(l0,.9f);
-        Point2D tan=evalDt(l0,9f).normalize().multiply(scale);
+        Point2D ori=eval(l0,.7f);
+        Point2D tan=evalDt(l0,7f).normalize().multiply(scale);
         arrowEnd.getElements().add(new MoveTo(ori.getX()-0.2*tan.getX()-0.2*tan.getY(),
                 ori.getY()-0.2*tan.getY()+0.2*tan.getX()));
         arrowEnd.getElements().add(new LineTo(ori.getX(), ori.getY()));

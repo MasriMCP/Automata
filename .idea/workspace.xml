@@ -3,9 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="212937fb-90e5-4b8d-8d27-2b7247f13c8e" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/config/config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/config/config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/config/config.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controllers/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controllers/MainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Visual/MealyTransition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Visual/MealyTransition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Visual/Transition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Visual/Transition.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,11 +32,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainController.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MainController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Controllers/MainController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="740" column="24" selection-start-line="740" selection-start-column="24" selection-end-line="740" selection-end-column="24" />
+            <state relative-caret-position="-1357">
+              <caret line="999" column="54" selection-start-line="999" selection-start-column="54" selection-end-line="999" selection-end-column="54" />
               <folding>
                 <element signature="e#27474#27475#0" expanded="true" />
                 <element signature="e#27524#27525#0" expanded="true" />
@@ -48,12 +48,21 @@
       <file leaf-file-name="Transition.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Visual/Transition.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1717">
-              <caret line="114" column="35" selection-start-line="114" selection-start-column="35" selection-end-line="114" selection-end-column="35" />
+            <state relative-caret-position="149">
+              <caret line="177" column="53" lean-forward="true" selection-start-line="177" selection-start-column="53" selection-end-line="177" selection-end-column="53" />
               <folding>
                 <element signature="e#4985#4986#0" expanded="true" />
                 <element signature="e#5023#5024#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.json" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Resources/config/config.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
             </state>
           </provider>
         </entry>
@@ -70,8 +79,8 @@
       <file leaf-file-name="WindowLoader.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Controllers/WindowLoader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="332">
-              <caret line="72" column="80" lean-forward="true" selection-start-line="72" selection-start-column="80" selection-end-line="72" selection-end-column="80" />
+            <state relative-caret-position="986">
+              <caret line="72" column="80" selection-start-line="72" selection-start-column="80" selection-end-line="72" selection-end-column="80" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -99,12 +108,12 @@
       </file>
       <file leaf-file-name="main_pane.fxml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Resources/View/main_pane.fxml">
+          <provider editor-type-id="JavaFX-Scene-Builder" />
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="612">
               <caret line="36" column="61" selection-start-line="36" selection-start-column="61" selection-end-line="36" selection-end-column="61" />
             </state>
           </provider>
-          <provider editor-type-id="JavaFX-Scene-Builder" />
         </entry>
       </file>
     </leaf>
@@ -121,8 +130,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>connectt</find>
-      <find>.get</find>
       <find>onMouseD</find>
       <find>choos</find>
       <find>.propert</find>
@@ -151,6 +158,8 @@
       <find>delete</find>
       <find>getSymbols().remove</find>
       <find>fxmlloade</find>
+      <find>-100</find>
+      <find>.9</find>
     </findStrings>
     <replaceStrings>
       <replace>Layout</replace>
@@ -172,9 +181,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java" />
-        <option value="$PROJECT_DIR$/src/Controllers/StartPaneController.java" />
-        <option value="$PROJECT_DIR$/src/Controllers/MainController.java" />
         <option value="$PROJECT_DIR$/src/Visual/Transition.java" />
         <option value="$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java" />
         <option value="$PROJECT_DIR$/src/Auto/FiniteStateTransducer.java" />
@@ -223,6 +229,9 @@
         <option value="$PROJECT_DIR$/src/Controllers/WindowLoader.java" />
         <option value="$PROJECT_DIR$/Resources/config/config.xml" />
         <option value="$PROJECT_DIR$/src/Controllers/MainController.java" />
+        <option value="$PROJECT_DIR$/src/Controllers/MainController.java" />
+        <option value="$PROJECT_DIR$/src/Visual/Transition.java" />
+        <option value="$PROJECT_DIR$/Resources/config/config.json" />
       </list>
     </option>
   </component>
@@ -240,6 +249,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -297,9 +309,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -456,7 +465,14 @@
       <option name="project" value="LOCAL" />
       <updated>1544604563444</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="lots of cleaning up and last commit before alpha release">
+      <created>1544864768406</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1544864768406</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -476,9 +492,8 @@
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24923313" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.24923313" />
       <window_info anchor="bottom" id="Statistic" order="8" weight="0.32884902" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32884902" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
@@ -491,6 +506,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32884902" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" id="Palette" order="3" />
@@ -539,14 +555,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Resources/View/start_pane.fxml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1207">
-          <caret line="71" column="113" selection-start-line="71" selection-start-column="113" selection-end-line="71" selection-end-column="113" />
-        </state>
-      </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Auto/DFA.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -582,9 +590,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="23" column="8" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -601,9 +606,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" column="61" lean-forward="true" selection-start-line="16" selection-start-column="61" selection-end-line="16" selection-end-column="61" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -613,9 +615,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="18" column="43" lean-forward="true" selection-start-line="18" selection-start-column="43" selection-end-line="18" selection-end-column="43" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -698,12 +697,12 @@
     <entry file="file://$PROJECT_DIR$/Resources/View/draw_pane.fxml" />
     <entry file="file://$PROJECT_DIR$/src/Controllers/DrawPaneController.java" />
     <entry file="file://$PROJECT_DIR$/Resources/View/start_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1207">
           <caret line="71" column="111" selection-start-line="71" selection-start-column="111" selection-end-line="71" selection-end-column="111" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Auto/MealyMachine.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -769,19 +768,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/View/main_pane.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="612">
           <caret line="36" column="61" selection-start-line="36" selection-start-column="61" selection-end-line="36" selection-end-column="61" />
         </state>
       </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Visual/State.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -807,17 +803,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Visual/Transition.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1717">
-          <caret line="114" column="35" selection-start-line="114" selection-start-column="35" selection-end-line="114" selection-end-column="35" />
-          <folding>
-            <element signature="e#4985#4986#0" expanded="true" />
-            <element signature="e#5023#5024#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Visual/MealyTransition.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -827,8 +812,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Controllers/WindowLoader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="72" column="80" lean-forward="true" selection-start-line="72" selection-start-column="80" selection-end-line="72" selection-end-column="80" />
+        <state relative-caret-position="986">
+          <caret line="72" column="80" selection-start-line="72" selection-start-column="80" selection-end-line="72" selection-end-column="80" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -851,12 +836,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Controllers/MainController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="740" column="24" selection-start-line="740" selection-start-column="24" selection-end-line="740" selection-end-column="24" />
+        <state relative-caret-position="-1357">
+          <caret line="999" column="54" selection-start-line="999" selection-start-column="54" selection-end-line="999" selection-end-column="54" />
           <folding>
             <element signature="e#27474#27475#0" expanded="true" />
             <element signature="e#27524#27525#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Visual/Transition.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="177" column="53" lean-forward="true" selection-start-line="177" selection-start-column="53" selection-end-line="177" selection-end-column="53" />
+          <folding>
+            <element signature="e#4985#4986#0" expanded="true" />
+            <element signature="e#5023#5024#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Resources/config/config.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
         </state>
       </provider>
     </entry>

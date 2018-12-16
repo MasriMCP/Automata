@@ -997,6 +997,7 @@ public class MainController {
                     }
                 }
             } else if (mode == CONNECT) {
+                connectingTransition.setVisible(true);
                 connectingTransition.setStart(temp.getCenterX(), temp.getCenterY());
                 connectingTransition.update();
                 connectingTransition.setEnd(e.getSceneX() - toolBox.getWidth(), e.getSceneY() - menuBar.getHeight());
@@ -1010,6 +1011,7 @@ public class MainController {
                 //remove the connecting initStateArrow from the screen
                 connectingTransition.setStart(-100, -100);
                 connectingTransition.setEnd(-100, -100);
+                connectingTransition.setVisible(false);
                 //the MouseEntered event does not fire while dragging and fires after the MouseReleased
                 //so the hovered variable would be null and cannot be used here
                 State connectTo = null;
