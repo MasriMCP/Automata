@@ -1,15 +1,11 @@
 package Controllers;
 
-import Controllers.WindowLoader;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
+import javax.swing.plaf.synth.SynthTextAreaUI;
+import java.io.FileOutputStream;
+import java.util.Properties;
 
 public class Main extends Application {
         /*
@@ -25,9 +21,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
+        Properties prop = new Properties();
+        prop.loadFromXML(getClass().getClassLoader().getResourceAsStream("config/config.xml"));
+        if(prop.getProperty("lod")==null){
+            prop.setProperty("lod",System.getProperty("user.home"));
+        }
+        prop.storeToXML(new FileOutputStream("resources/config/config.xml"),null);
         WindowLoader.loadStartWindow();
-
-
     }
 }

@@ -20,8 +20,8 @@ public class Transition extends Group implements Serializable {
     private final static int STROKE_WIDTH = 3;
     protected HashSet<Character> symbols = new HashSet<>();
     protected Label symbolsLabel = new Label();
-    private State s0, s1;
-    private Circle controlPoint;//(not) used to control the curve's control points
+    protected State s0, s1;
+    private Circle controlPoint;//used to control the curve's control points
     private Path arrowEnd=new Path();
     public Transition(State s0, State s1) {
             controlPoint = new Circle();
@@ -141,7 +141,7 @@ public class Transition extends Group implements Serializable {
             if(l0.getEndY()>l0.getStartY())ret = 180;
             else ret = 0;
         }
-        System.out.println(ret);
+
         return new SimpleDoubleProperty(180);
     }*/
     public void updateLabel(){
@@ -194,5 +194,10 @@ public class Transition extends Group implements Serializable {
                         3*((1-t)*2*t-t*t)*c.getControlY2()+
                         3*Math.pow(t, 2)*c.getEndY());
         return p;
+    }
+
+    @Override
+    public String toString() {
+        return symbols.toString();
     }
 }

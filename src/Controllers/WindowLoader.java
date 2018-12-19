@@ -75,14 +75,14 @@ public class WindowLoader {
 
         FileChooser chooser = new FileChooser();
         String directory = (String)prop.getOrDefault("lod",System.getProperty("user.home"));
-        chooser.setInitialDirectory(new File(directory));
+        chooser.setInitialDirectory(new File(Paths.get(directory).getParent().toString()));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST","*.fst"));
         String path = chooser.showOpenDialog(stage).getAbsolutePath();
-        prop.setProperty("lod", Paths.get(path).getParent().toString());
-        System.out.println(prop.getProperty("lod"));
+        prop.setProperty("lod", path);
+
         new Thread(()->{
             try {
-                prop.storeToXML(new FileOutputStream("C:/Users/PDX/Desktop/AutomataProject/resources/config/config.xml"),null);
+                prop.storeToXML(new FileOutputStream("resources/config/config.xml"),null);
             } catch (IOException e) {
                 e.printStackTrace();
             }

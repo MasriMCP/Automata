@@ -4,21 +4,13 @@ import Auto.*;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.FileChooser;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.*;
-import java.util.HashSet;
-import java.util.Properties;
+import java.io.IOException;
 
 public class StartPaneController {
 
@@ -54,8 +46,6 @@ public class StartPaneController {
 
     @FXML
     void loadAuto(ActionEvent event) {
-
-
         try{
             String path = WindowLoader.showFileChooserDialog((Stage)((Node)(event.getSource())).getScene().getWindow());
             WindowLoader.loadMainWindowWithPath(path);

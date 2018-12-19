@@ -64,7 +64,9 @@ public class State extends StackPane implements Serializable {
     public double getCenterY() {
         return getLayoutY() + R;
     }
-    public void setInitial(){
 
+    @Override
+    public String toString() {
+        return getName();
     }
 }

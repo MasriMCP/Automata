@@ -45,7 +45,6 @@ public class MainController {
             COLOR_TRANSITION_SELECTED = Color.RED,
             COLOR_TRANSITION_NOT_SELECTED = Color.ORANGE;//colors used
     private int noNameStateCounter = 0;
-    private File openFile = null;
     private boolean connecting = false;// is true when the user is creating a transition between two states
     public final static int SELECT = 0, ADD = 1, CONNECT = 2, DELETE = 3, INITIAL = 4, FINAL = 5;
     HashSet<Transition> transitionSet = new HashSet<>();
@@ -103,8 +102,7 @@ public class MainController {
             } else if (fst instanceof NFA) {
                 outputLabel.setText(((NFA) (fst)).isAccepted(inputText.getText()) ? "accepted" : "not accepted");
             } else {
-                System.out.println(inputText.getText());
-                System.out.println(fst.run(inputText.getText()));
+
                 outputLabel.setText(fst.run(inputText.getText()));
             }
         } catch (IllegalStateException ex) {
@@ -127,36 +125,48 @@ public class MainController {
     void toolAdd(Event event) {
         mode = ADD;
         modeLabel.setText("add");
+        ((ToggleButton) event.getSource()).setSelected(true);
     }
 
     @FXML
     void toolConnect(Event event) {
         mode = CONNECT;
         modeLabel.setText("connect");
+        ((ToggleButton) event.getSource()).setSelected(true);
+
     }
+
 
     @FXML
     void toolDelete(Event event) {
         mode = DELETE;
         modeLabel.setText("delete");
+        ((ToggleButton) event.getSource()).setSelected(true);
+
     }
 
     @FXML
     void toolFinal(Event event) {
         mode = FINAL;
         modeLabel.setText("final");
+        ((ToggleButton) event.getSource()).setSelected(true);
+
     }
 
     @FXML
     void toolInitial(Event event) {
         mode = INITIAL;
         modeLabel.setText("initial");
+        ((ToggleButton) event.getSource()).setSelected(true);
+
     }
 
     @FXML
     void toolSelect(Event event) {
         mode = SELECT;
         modeLabel.setText("select");
+        ((ToggleButton) event.getSource()).setSelected(true);
+
     }
 
     void setFST(FiniteStateTransducer fst) {
@@ -311,7 +321,6 @@ public class MainController {
         dialog.setContentText("symbols:");
         HashSet<Character> newlyAddedSymbols = new HashSet<>();
         Optional<String> result = dialog.showAndWait();
-        char mealyOutputChar = 0;
         result.ifPresent(symbolsString -> {
             TextInputDialog mealyOutputDialog = new TextInputDialog();
             mealyOutputDialog.setContentText("add an output character");
@@ -343,7 +352,7 @@ public class MainController {
                             else illegalSymbolsList.add(i);
                         }
                     }
-            } else if(symbolsString.matches("\\s*([A-Za-z0-9]\\s*,\\s*)*[A-Za-z0-9]\\s*")) {
+            } else if(symbolsString.matches("\\s*([A-Za-z0-9:;!@#$%^&*()]\\s*,\\s*)*[A-Za-z0-9:;!@#$%^&*()]\\s*")) {
                 symbolsString = symbolsString.trim();
                 String[] temp = symbolsString.split("\\s*,\\s*");
                 for (int i = 0; i < temp.length; i++) {
@@ -403,6 +412,7 @@ public class MainController {
                     trans = new Transition(s0, s1);
                 }
                 trans.setOnMouseClicked(e -> {
+
                     if (mode == SELECT) {
                         if (selected != null) {
                             if (selected instanceof State) {
@@ -471,14 +481,13 @@ public class MainController {
                                     }
                             }
                             if(fst instanceof MealyMachine) {
-                                System.out.println(((MealyTransition) deletedTransition).getMap());
+
                                 if (((MealyTransition) deletedTransition).getMap().size() == 0) {
                                     drawPane.getChildren().remove(deletedTransition);
                                 }
                             }
                             else
                             if (deletedTransition.getSymbols().size() == 0) {
-                                System.out.println("Xxxxxxx");
                                 drawPane.getChildren().remove(deletedTransition);
                             }
 
@@ -535,7 +544,9 @@ public class MainController {
 
                 }
             }
+            //if there are symbols in the input used in transitions to other states
             if (addedSymbolsList.size() > 0) {
+
                 Alert addedSymbolsAlert = new Alert(Alert.AlertType.WARNING,
                         "symbols: " + addedSymbolsList.toString() + " are already connected to other states." +
                                 "would you like to delete those transitions and add new transitions?", ButtonType.YES, ButtonType.NO);
@@ -545,21 +556,30 @@ public class MainController {
                     for (char i : addedSymbolsList) {
                         Transition deletedTransition = null;
                         for (Transition t : transitionSet) {
-                            if (t.getS0() == s0 && t.getSymbols().contains(i)) {
+                            if (t.getS0()==s0 && t.getSymbols().contains(i)) {
                                 deletedTransition = t;
                                 break;
                             }
                         }
                         deletedTransition.removeSymbol(i);
                         fst.deleteTransition(s0.getName(), i, s1.getName());
-                        if (deletedTransition.getSymbols().size() <= 0) {
-                            transitionSet.remove(deletedTransition);
+                        if(fst instanceof MealyMachine) {
+
+                            if (((MealyTransition) deletedTransition).getMap().size() == 0) {
+                                drawPane.getChildren().remove(deletedTransition);
+                            }
+                        }
+                        else
+                        if (deletedTransition.getSymbols().size() == 0) {
+
                             drawPane.getChildren().remove(deletedTransition);
                         }
+                        transitionSet.remove(deletedTransition);
+
                         if (fst instanceof MealyMachine) {
-                            fst.addOutputAlpha(mealyOutputChar);
-                            ((MealyMachine) fst).addTransitionOutput(s0.getName(), i, s1.getName(), mealyOutputChar);
-                            addMealyTransition(s0, s1, i, mealyOutputChar);
+                            fst.addOutputAlpha(mealyOutputResult.get().charAt(0));
+                            ((MealyMachine) fst).addTransitionOutput(s0.getName(), i, s1.getName(), mealyOutputResult.get().charAt(0));
+                            addMealyTransition(s0, s1, i, mealyOutputResult.get().charAt(0));
                         } else {
                             fst.addTransition(s0.getName(), i, s1.getName());
                             addTransition(s0, s1, i);
@@ -601,8 +621,21 @@ public class MainController {
         }
         fst.delete(state.getName());
     }
-
+    //GUI use
     private void setInitial(State s) {
+        if(!s.getName().equals(fst.getInitialState())) {
+            setInitialState(s);
+        }
+        else{
+            fst.deleteInitialState();
+            initStateArrow.xProperty().unbind();
+            initStateArrow.yProperty().unbind();
+            initStateArrow.setX(-100);
+            initStateArrow.setY(-100);
+        }
+    }
+    //non-GUI use
+    private void setInitialState(State s){
         fst.setInitialState(s.getName());
         if (!drawPane.getChildren().contains(initStateArrow)) drawPane.getChildren().add(initStateArrow);
         initStateArrow.xProperty().unbind();
@@ -705,7 +738,10 @@ public class MainController {
 
         try {
             prop.loadFromXML(Main.class.getClassLoader().getResourceAsStream("config/config.xml"));
-            chooser.setInitialDirectory(new File((String) prop.getOrDefault("lod",System.getProperty("user.home"))));
+            String directory = (String) prop.getOrDefault("lod",System.getProperty("user.home"+"Desktop"));
+            if(directory==null) directory = System.getProperty("user.home")+"\\Desktop";
+
+            chooser.setInitialDirectory(new File(Paths.get(directory).getParent().toString()));
             chooser.setInitialFileName(fst.getName());
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FST", ".fst"));
             openPath = chooser.showSaveDialog(drawPane.getScene().getWindow()).getAbsolutePath();
@@ -719,8 +755,8 @@ public class MainController {
         }
         try {
             save(openPath);
-            prop.setProperty("lod",Paths.get(openPath).getParent().toString());
-            prop.storeToXML(new FileOutputStream("C:/Users/PDX/Desktop/AutomataProject/resources/config/config.xml"),null);
+            prop.setProperty("lod",openPath);
+            prop.storeToXML(new FileOutputStream("resources/config/config.xml"),null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -746,6 +782,7 @@ public class MainController {
         Alert clearAlert = new Alert(Alert.AlertType.WARNING,
                 "are you sure? this will delete all states and transitions.", ButtonType.YES, ButtonType.NO);
         clearAlert.setTitle("Clear");
+
         Optional<ButtonType> clearResult = clearAlert.showAndWait();
         if (clearResult.get() == ButtonType.YES) {
 
@@ -758,7 +795,7 @@ public class MainController {
             }
             if (!(fst instanceof DFA || fst instanceof NFA))
                 fst.getOutputAlpha().removeAll(fst.getOutputAlpha());
-            Set<String> copy2 = fst.getOutputMap().keySet();
+            Set<String> copy2 = new HashSet<>(fst.getOutputMap().keySet());
             for (String i : copy2) {
                 fst.getOutputMap().remove(i);
             }
@@ -775,19 +812,25 @@ public class MainController {
             Map<String, Point> loadStateMap = (HashMap<String, Point>) in.readObject();
             Map<String, Point> loadControlPointMap = (HashMap<String, Point>) in.readObject();
             fst = (FiniteStateTransducer) in.readObject();
+
             inputAlphaLabel.setText(fst.getInputAlpha().toString());
             setFST(fst);
+
 
 
             for (String i : loadStateMap.keySet()) {
                 State s = (fst instanceof MooreMachine) && !(fst instanceof DFA || fst instanceof NFA) ?
                         addMooreState(loadStateMap.get(i).x, loadStateMap.get(i).y, i, fst.getOutputMap().get(i)) :
                         addState(loadStateMap.get(i).x, loadStateMap.get(i).y, i);
-                if (i.equals(fst.getInitialState())) {
-                    setInitial(s);
-                }
+
                 if ((fst instanceof DFA || fst instanceof NFA) && fst.getOutputMap().get(i) == '1') {
                     s.setCircleStroke(COLOR_FINAL_STROKE);
+                }
+                if(s.getName().equals(fst.getInitialState())){
+
+
+                    setInitialState(s);
+
                 }
                 initState(s);
             }
@@ -808,6 +851,7 @@ public class MainController {
                         }
                     }
                     for (State k : statelist) {
+
                         Transition t = addTransition(s0, k, i.charAt(i.length() - 1));
                         Point p = loadControlPointMap.get(s0.getName() + "," + k.getName());
                         t.setControlPoint(p.x, p.y);
@@ -840,14 +884,19 @@ public class MainController {
         }
         catch (StreamCorruptedException e){
             new Alert(Alert.AlertType.ERROR,"File corrupt or incompatible",ButtonType.OK).showAndWait();
+            ((Stage) drawPane.getScene().getWindow()).close();
+
             throw e;
         }
         catch (IOException e) {
             new Alert(Alert.AlertType.ERROR,"Unknown error",ButtonType.OK).showAndWait();
+            ((Stage) drawPane.getScene().getWindow()).close();
+
             throw e;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
 
 
 
@@ -867,7 +916,7 @@ public class MainController {
             drawPane.getChildren().add(trans);
         trans.addSymbol(symbol);
         trans.updateLabel();
-        initTransition(trans);
+        initTransition(trans,s0,s1);
         trans.toBack();
         return trans;
 
@@ -884,10 +933,10 @@ public class MainController {
         }
         trans.addSymbolOutput(symbol, output);
         transitionSet.add(trans);
+        if(!drawPane.getChildren().contains(trans))
         drawPane.getChildren().add(trans);
-        trans.addSymbol(symbol);
         trans.updateLabel();
-        initTransition(trans);
+        initTransition(trans,s0,s1);
         trans.toBack();
         return trans;
     }
@@ -901,8 +950,10 @@ public class MainController {
         return false;
     }
 
-    private void initTransition(Transition trans) {
+    private void initTransition(Transition trans,State s0,State s1) {
         trans.setOnMouseClicked(e -> {
+
+
             if (mode == SELECT) {
                 if (selected != null) {
                     if (selected instanceof State) {
@@ -931,6 +982,9 @@ public class MainController {
                             for (char i = symbol0; i <= symbol1; i++) {
                                 if (fst.getInputAlpha().contains(i)) {
                                     fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1().getName());
+                                    if(fst instanceof MealyMachine){
+                                        fst.getOutputMap().remove(s0.getName()+i);
+                                    }
                                     deletedTransition.removeSymbol(i);
                                 }
 
@@ -939,32 +993,46 @@ public class MainController {
                             for (char i = symbol1; i <= symbol0; i++) {
                                 if (fst.getInputAlpha().contains(i)) {
                                     fst.deleteTransition(deletedTransition.getS0().getName(), i, deletedTransition.getS1().getName());
+                                    if(fst instanceof MealyMachine){
+                                        fst.getOutputMap().remove(s0.getName()+i);
+                                    }
                                     deletedTransition.removeSymbol(i);
 
                                 }
                             }
                     } else {
                         String[] deleteTemp = deleteString.split("\\s+|,");//one or more spaces or a comma
-                        for (int i = 0; i < deleteTemp.length; i++) {
-                            if (fst.getInputAlpha().contains(deleteTemp[i].charAt(0))) {
-                                fst.deleteTransition(deletedTransition.getS0().getName(), deleteTemp[i].charAt(0), deletedTransition.getS1().getName());
-                                deletedTransition.removeSymbol(deleteTemp[i].charAt(0));
+                        if (deleteTemp.length == 0) {
+                            if (fst.getInputAlpha().contains(NFA.LAMBDA)) {
+                                fst.deleteTransition(deletedTransition.getS0().getName(), NFA.LAMBDA, deletedTransition.getS1().getName());
+                                deletedTransition.removeSymbol(NFA.LAMBDA);
 
                             }
+                        } else
+                            for (int i = 0; i < deleteTemp.length; i++) {
+                                if (fst.getInputAlpha().contains(deleteTemp[i].charAt(0))) {
+                                    fst.deleteTransition(deletedTransition.getS0().getName(), deleteTemp[i].charAt(0), deletedTransition.getS1().getName());
+                                    if(fst instanceof MealyMachine){
+                                        fst.getOutputMap().remove(s0.getName()+deleteTemp[i].charAt(0));
+                                    }
+                                    deletedTransition.removeSymbol(deleteTemp[i].charAt(0));
 
-                        }
+                                }
+
+                            }
                     }
                     if(fst instanceof MealyMachine) {
-                        System.out.println(((MealyTransition) deletedTransition).getMap());
+
                         if (((MealyTransition) deletedTransition).getMap().size() == 0) {
                             drawPane.getChildren().remove(deletedTransition);
                         }
                     }
                     else
                     if (deletedTransition.getSymbols().size() == 0) {
-                        System.out.println("Xxxxxxx");
+
                         drawPane.getChildren().remove(deletedTransition);
                     }
+
                     //add the newly added symbols to the input alpha label
                     Object[] sorted = fst.getInputAlpha().toArray();
                     Arrays.sort(sorted);
@@ -974,7 +1042,6 @@ public class MainController {
                 deletedTransition.updateLabel();
             }
         });
-
 
     }
 
@@ -1095,7 +1162,14 @@ public class MainController {
     public void openFile(Event event) {
         try {
             if(saveChangesDialog()) {
-                String path = WindowLoader.showFileChooserDialog((Stage) drawPane.getScene().getWindow());
+                String path;
+                try {
+                    path = WindowLoader.showFileChooserDialog((Stage) drawPane.getScene().getWindow());
+
+                }
+                catch (IOException ex){
+                    return;
+                }
                 WindowLoader.loadMainWindowWithPath(path);
             }
         } catch (IOException e) {
@@ -1124,7 +1198,7 @@ public class MainController {
                 } else {
                     saveAsDialog(null);
                 }
-
+                return true;
             } else if(res.get()==ButtonType.NO){
                 return true;
             }
@@ -1133,6 +1207,89 @@ public class MainController {
             }
         }
             return false;
+    }
+    @FXML
+    void changeName(ActionEvent e){
+        TextInputDialog changeNameDialoge = new TextInputDialog(fst.getName());
+        changeNameDialoge.setContentText("Enter a new Name");
+        changeNameDialoge.setHeaderText("cahnge naem");
+        changeNameDialoge.showAndWait();
+        if(changeNameDialoge.getResult()!=null){
+            fst.setName(changeNameDialoge.getResult());
+            nameLabel.setText("Name: "+changeNameDialoge.getResult());
+        }
+    }
+
+    @FXML
+    void changeDesc(ActionEvent e){
+        TextInputDialog changeDescDialoge = new TextInputDialog(fst.getName());
+        changeDescDialoge.setContentText("Enter a new description");
+        changeDescDialoge.setHeaderText("change description");
+        changeDescDialoge.showAndWait();
+        if(changeDescDialoge.getResult()!=null){
+            fst.addDescription(changeDescDialoge.getResult());
+           descLabel.setText("Descrition: "+changeDescDialoge.getResult());
+        }
+    }
+
+    @FXML
+    void deleteInputAlpha(ActionEvent e){
+        String input = inputAlphaText.getText();
+        if(input.length()==0) return;
+        Alert deleteInputAlphaAlert = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure? this will delete" +
+                "all transitions conatining these symbols",ButtonType.YES,ButtonType.NO);
+        Optional<ButtonType> res =  deleteInputAlphaAlert.showAndWait();
+        if(res.get()!=ButtonType.YES) return;
+       HashSet<Character> deletedSymbols = new HashSet<>();
+
+       //get the symbols
+       if(input.matches("\\s*[A-Za-z]\\.\\.[A-Za-z]\\s*|\\d\\.\\.\\d\\s*")){
+           char c0 = input.charAt(0),c1 = input.charAt(3);
+           if(c0>c1){
+               char temp = c0;
+               c0 = c1;
+               c1 = temp;
+           }
+           for(char i = c0;i<=c1;i++){
+               deletedSymbols.add(i);
+           }
+
+        }
+        else if(input.matches("\\s*([A-Za-z0-9:;!@#$%^&*()]\\s*,\\s*)*[A-Za-z0-9:;!@#$%^&*()]\\s*")){
+           input = input.trim();
+           String[] inputarr = input.split("\\s*,\\s*");
+           for (int i = 0; i < inputarr.length; i++) {
+               deletedSymbols.add(inputarr[i].charAt(0));
+           }
+       }
+       else{
+
+       }
+
+       //get the transitions containing the symbols
+        HashSet<Transition> deletedTransitions = new HashSet<>();
+        for(Transition t:transitionSet){
+           for(char i:deletedSymbols){
+               if(t.getSymbols().contains(i)){
+                   fst.deleteTransition(t.getS0().getName(),i,t.getS1().getName());
+                   t.getSymbols().remove(i);
+                   if(t instanceof MealyTransition){
+                       ((MealyTransition) t).getMap().remove(i);
+                       fst.getOutputMap().remove(t.getS0().getName()+String.valueOf(i));
+                   }
+               }
+           }
+           t.updateLabel();
+           if(t.getSymbols().size()==0){
+               drawPane.getChildren().remove(t);
+               deletedTransitions.add(t);
+           }
+        }
+        transitionSet.removeAll(deletedTransitions);
+        fst.getInputAlpha().removeAll(deletedSymbols);
+        inputAlphaLabel.setText(fst.getInputAlpha().toString());
+
+        inputAlphaText.setText("");
     }
 }
 

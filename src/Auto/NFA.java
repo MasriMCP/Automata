@@ -65,7 +65,7 @@ public class NFA extends MooreMachine {
         for (String s : states) {
             //for each state
             //if any of the branches can reach a final state ret will be true;
-            HashSet<String> recSearched = new HashSet<String>();
+            HashSet<String> recSearched = new HashSet<>();
             ret = ret || run(input.substring(1, input.length()), s,recSearched);
         }
 
@@ -93,7 +93,6 @@ public class NFA extends MooreMachine {
     public void deleteTransition(String s0,char symbol,String s1){
         //TODO not done yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         StringBuilder temp = new StringBuilder(transitionMap.get(s0+String.valueOf(symbol)));
-        System.out.println(transitionMap.get(s0+String.valueOf(symbol)));
         int index0 = temp.indexOf(s1);
         int index1=temp.indexOf(",",index0)+1;
         if(index1==0) index1=temp.length();

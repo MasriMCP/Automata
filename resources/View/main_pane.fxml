@@ -28,18 +28,17 @@
           <items>
             <MenuItem mnemonicParsing="false" onAction="#newFile" text="New (ctrl+n)" />
             <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open… (ctrl+o)" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#saveDialog" text="Save (ctrl+s)" />
             <MenuItem mnemonicParsing="false" onAction="#saveAsDialog" text="Save As… (ctrl+shift+s)" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Edit">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#clear" text="Clear" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeDesc" text="Change Description" />
               </items>
             </Menu>
       </menus>
@@ -161,11 +160,20 @@
                         <Insets bottom="5.0" left="10.0" />
                      </VBox.margin>
                   </TextField>
-                  <Button mnemonicParsing="false" onAction="#inputAlphaAdd" text="add">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="10.0" />
-                     </VBox.margin>
-                  </Button>
+                  <HBox>
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#inputAlphaAdd" text="add">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#deleteInputAlpha" text="delete">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
                   <Separator prefWidth="200.0" />
                   <Label text="Run">
                      <font>
